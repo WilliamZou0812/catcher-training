@@ -7,1143 +7,778 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root {
-    --bg: #0a0c10;
-    --surface: #111318;
-    --card: #161b24;
-    --accent: #e8a020;
-    --accent2: #3b82f6;
-    --accent3: #22c55e;
-    --red: #ef4444;
-    --text: #f0f4f8;
-    --muted: #8896a7;
-    --border: #1e2535;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans TC', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* HERO */
-  .hero {
-    position: relative;
-    padding: 60px 24px 40px;
-    text-align: center;
-    overflow: hidden;
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -80px; left: 50%;
-    transform: translateX(-50%);
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(232,160,32,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .hero-badge {
-    display: inline-block;
-    background: rgba(232,160,32,0.15);
-    border: 1px solid rgba(232,160,32,0.4);
-    color: var(--accent);
-    font-size: 11px;
-    letter-spacing: 3px;
-    padding: 6px 16px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-  }
-
-  .hero h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(42px, 8vw, 80px);
-    letter-spacing: 4px;
-    line-height: 1;
-    margin-bottom: 8px;
-    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .hero-sub {
-    font-size: 14px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    margin-bottom: 32px;
-  }
-
-  /* STATS ROW */
-  .stats-row {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 48px;
-    padding: 0 24px;
-  }
-
-  .stat-pill {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 22px;
-    text-align: center;
-    min-width: 100px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .stat-pill::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-  }
-
-  .stat-pill.gold::after { background: var(--accent); }
-  .stat-pill.blue::after { background: var(--accent2); }
-  .stat-pill.green::after { background: var(--accent3); }
-  .stat-pill.red::after { background: var(--red); }
-
-  .stat-val {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 2px;
-  }
-  .stat-pill.gold .stat-val { color: var(--accent); }
-  .stat-pill.blue .stat-val { color: var(--accent2); }
-  .stat-pill.green .stat-val { color: var(--accent3); }
-  .stat-pill.red .stat-val { color: var(--red); }
-
-  .stat-label {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-    letter-spacing: 0.5px;
-  }
-
-  /* CONTAINER */
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px 60px;
-  }
-
-  /* SECTION TITLE */
-  .section-title {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-    margin-top: 48px;
-  }
-
-  .section-title .icon {
-    width: 40px; height: 40px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  .section-title h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
-    letter-spacing: 2px;
-  }
-
-  .section-title .num {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 2px;
-  }
-
-  /* PRIORITY BAR CHART */
-  .priority-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 14px;
-  }
-
-  .priority-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s;
-  }
-
-  .priority-card:hover { transform: translateY(-2px); }
-
-  .priority-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 52px;
-    line-height: 1;
-    opacity: 0.08;
-    position: absolute;
-    right: 14px; top: 8px;
-  }
-
-  .priority-badge {
-    font-size: 10px;
-    letter-spacing: 2px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    display: inline-block;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    font-weight: 700;
-  }
-
-  .p1 .priority-badge { background: rgba(232,160,32,0.2); color: var(--accent); border: 1px solid rgba(232,160,32,0.3); }
-  .p2 .priority-badge { background: rgba(59,130,246,0.2); color: var(--accent2); border: 1px solid rgba(59,130,246,0.3); }
-  .p3 .priority-badge { background: rgba(34,197,94,0.2); color: var(--accent3); border: 1px solid rgba(34,197,94,0.3); }
-  .p4 .priority-badge { background: rgba(239,68,68,0.2); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
-
-  .priority-title {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  .priority-bar-wrap {
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 8px;
-  }
-
-  .priority-bar {
-    height: 100%;
-    border-radius: 3px;
-    animation: barGrow 1.2s ease forwards;
-    transform-origin: left;
-  }
-
-  @keyframes barGrow {
-    from { width: 0; }
-  }
-
-  .p1 .priority-bar { background: var(--accent); width: 95%; }
-  .p2 .priority-bar { background: var(--accent2); width: 80%; }
-  .p3 .priority-bar { background: var(--accent3); width: 65%; }
-  .p4 .priority-bar { background: var(--red); width: 50%; }
-
-  .priority-desc {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  /* CHART CARD */
-  .chart-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-
-  .chart-card h3 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 4px;
-    letter-spacing: 0.5px;
-  }
-
-  .chart-card p {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
-
-  .chart-wrap {
-    position: relative;
-    height: 260px;
-  }
-
-  /* TRAINING TABLE */
-  .week-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-  }
-
-  @media(max-width: 700px) {
-    .week-grid { grid-template-columns: repeat(3, 1fr); }
-  }
-
-  .day-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 10px;
-    text-align: center;
-    transition: all 0.2s;
-    cursor: default;
-  }
-
-  .day-card:hover {
-    border-color: rgba(232,160,32,0.4);
-    background: var(--surface);
-  }
-
-  .day-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-
-  .day-tag {
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 20px;
-    margin-bottom: 8px;
-    display: inline-block;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-  }
-
-  .tag-arm { background: rgba(232,160,32,0.2); color: var(--accent); }
-  .tag-bat { background: rgba(59,130,246,0.2); color: var(--accent2); }
-  .tag-body { background: rgba(34,197,94,0.2); color: var(--accent3); }
-  .tag-rest { background: rgba(139,92,246,0.2); color: #a78bfa; }
-  .tag-review { background: rgba(239,68,68,0.2); color: var(--red); }
-
-  .day-items {
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.8;
-    text-align: left;
-  }
-
-  /* EXERCISE TABLE */
-  .ex-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  .ex-table th {
-    background: rgba(232,160,32,0.1);
-    color: var(--accent);
-    font-size: 11px;
-    letter-spacing: 1px;
-    padding: 10px 14px;
-    text-align: left;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-
-  .ex-table td {
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-  }
-
-  .ex-table tr:last-child td { border-bottom: none; }
-  .ex-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-  .ex-badge {
-    display: inline-block;
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-
-  .ex-arm { background: rgba(232,160,32,0.15); color: var(--accent); }
-  .ex-leg { background: rgba(34,197,94,0.15); color: var(--accent3); }
-  .ex-bat { background: rgba(59,130,246,0.15); color: var(--accent2); }
-  .ex-home { background: rgba(239,68,68,0.15); color: var(--red); }
-
-  /* MILESTONE */
-  .milestone-wrap {
-    position: relative;
-    padding-left: 28px;
-  }
-
-  .milestone-wrap::before {
-    content: '';
-    position: absolute;
-    left: 8px; top: 20px; bottom: 20px;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent3));
-    border-radius: 2px;
-  }
-
-  .milestone {
-    position: relative;
-    margin-bottom: 20px;
-  }
-
-  .milestone::before {
-    content: '';
-    position: absolute;
-    left: -24px; top: 16px;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    border: 2px solid;
-  }
-
-  .m1::before { border-color: var(--accent); background: rgba(232,160,32,0.3); }
-  .m2::before { border-color: var(--accent2); background: rgba(59,130,246,0.3); }
-  .m3::before { border-color: var(--accent3); background: rgba(34,197,94,0.3); }
-
-  .milestone-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-  }
-
-  .milestone-month {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 16px;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-  }
-
-  .m1 .milestone-month { color: var(--accent); }
-  .m2 .milestone-month { color: var(--accent2); }
-  .m3 .milestone-month { color: var(--accent3); }
-
-  .milestone-items {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.8;
-  }
-
-  .milestone-items li {
-    list-style: none;
-    padding-left: 14px;
-    position: relative;
-  }
-
-  .milestone-items li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    opacity: 0.5;
-  }
-
-  /* DIET */
-  .diet-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-  }
-
-  .diet-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
-  }
-
-  .diet-icon { font-size: 24px; margin-bottom: 8px; }
-  .diet-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
-  .diet-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
-
-  .protein-target {
-    background: linear-gradient(135deg, rgba(232,160,32,0.1), rgba(232,160,32,0.05));
-    border: 1px solid rgba(232,160,32,0.3);
-    border-radius: 12px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 12px;
-  }
-
-  .protein-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 40px;
-    color: var(--accent);
-    letter-spacing: 2px;
-    line-height: 1;
-  }
-
-  .protein-info { font-size: 12px; color: var(--muted); line-height: 1.6; }
-
-  /* CHARTS 2-col */
-  .charts-2col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
-  @media(max-width: 640px) {
-    .charts-2col { grid-template-columns: 1fr; }
-  }
-
-  /* FOOTER */
-  .footer {
-    text-align: center;
-    padding: 32px;
-    font-size: 12px;
-    color: var(--muted);
-    border-top: 1px solid var(--border);
-    letter-spacing: 1px;
-  }
-
-  .footer span { color: var(--accent); }
+:root{--bg:#0a0c10;--surface:#111318;--card:#161b24;--accent:#e8a020;--accent2:#3b82f6;--accent3:#22c55e;--red:#ef4444;--text:#f0f4f8;--muted:#8896a7;--border:#1e2535;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* NAV TABS */
+.nav-tabs{display:flex;gap:0;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;overflow-x:auto;}
+.nav-tab{flex:1;min-width:70px;padding:14px 8px;text-align:center;font-size:11px;font-weight:700;letter-spacing:0.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.nav-tab:hover{color:var(--text);}
+.tab-page{display:none;}.tab-page.active{display:block;}
+
+/* HERO */
+.hero{position:relative;padding:48px 24px 32px;text-align:center;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(232,160,32,0.1) 0%,transparent 70%);pointer-events:none;}
+.hero-badge{display:inline-block;background:rgba(232,160,32,0.15);border:1px solid rgba(232,160,32,0.4);color:var(--accent);font-size:11px;letter-spacing:3px;padding:6px 16px;border-radius:20px;margin-bottom:16px;text-transform:uppercase;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,7vw,72px);letter-spacing:4px;line-height:1;margin-bottom:8px;background:linear-gradient(135deg,#fff 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:13px;color:var(--muted);letter-spacing:1px;margin-bottom:24px;}
+
+/* STATS */
+.stats-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;padding:0 16px;}
+.stat-pill{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;text-align:center;min-width:90px;position:relative;overflow:hidden;}
+.stat-pill::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;}
+.stat-pill.gold::after{background:var(--accent);}.stat-pill.blue::after{background:var(--accent2);}.stat-pill.green::after{background:var(--accent3);}.stat-pill.red::after{background:var(--red);}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;}
+.stat-pill.gold .stat-val{color:var(--accent);}.stat-pill.blue .stat-val{color:var(--accent2);}.stat-pill.green .stat-val{color:var(--accent3);}.stat-pill.red .stat-val{color:var(--red);}
+.stat-label{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* CONTAINER */
+.container{max-width:1100px;margin:0 auto;padding:0 16px 60px;}
+.section-title{display:flex;align-items:center;gap:12px;margin-bottom:16px;margin-top:40px;}
+.section-title .icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.section-title h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;}
+.section-title .num{font-size:10px;color:var(--muted);letter-spacing:2px;}
+
+/* CARDS */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;}
+.chart-card h3{font-size:14px;font-weight:700;margin-bottom:4px;}
+.chart-card p{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.chart-wrap{position:relative;height:240px;}
+.charts-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:640px){.charts-2col{grid-template-columns:1fr;}}
+
+/* PRIORITY */
+.priority-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
+.priority-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:transform .2s;}
+.priority-card:hover{transform:translateY(-2px);}
+.priority-num{font-family:'Bebas Neue',sans-serif;font-size:48px;line-height:1;opacity:.07;position:absolute;right:12px;top:6px;}
+.priority-badge{font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px;text-transform:uppercase;font-weight:700;}
+.p1 .priority-badge{background:rgba(232,160,32,.2);color:var(--accent);border:1px solid rgba(232,160,32,.3);}
+.p2 .priority-badge{background:rgba(59,130,246,.2);color:var(--accent2);border:1px solid rgba(59,130,246,.3);}
+.p3 .priority-badge{background:rgba(34,197,94,.2);color:var(--accent3);border:1px solid rgba(34,197,94,.3);}
+.p4 .priority-badge{background:rgba(239,68,68,.2);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+.priority-title{font-size:14px;font-weight:700;margin-bottom:6px;}
+.priority-bar-wrap{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:6px;}
+.priority-bar{height:100%;border-radius:3px;animation:barGrow 1.2s ease forwards;}
+@keyframes barGrow{from{width:0;}}
+.p1 .priority-bar{background:var(--accent);width:95%;}
+.p2 .priority-bar{background:var(--accent2);width:80%;}
+.p3 .priority-bar{background:var(--accent3);width:65%;}
+.p4 .priority-bar{background:var(--red);width:50%;}
+.priority-desc{font-size:11px;color:var(--muted);line-height:1.6;}
+
+/* EXERCISE TABLE */
+.ex-table{width:100%;border-collapse:collapse;font-size:13px;}
+.ex-table th{background:rgba(232,160,32,.1);color:var(--accent);font-size:10px;letter-spacing:1px;padding:10px 12px;text-align:left;font-weight:600;text-transform:uppercase;}
+.ex-table td{padding:11px 12px;border-bottom:1px solid var(--border);}
+.ex-table tr:last-child td{border-bottom:none;}
+.ex-table tr:hover td{background:rgba(255,255,255,.02);}
+.ex-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;}
+.ex-arm{background:rgba(232,160,32,.15);color:var(--accent);}
+.ex-leg{background:rgba(34,197,94,.15);color:var(--accent3);}
+.ex-bat{background:rgba(59,130,246,.15);color:var(--accent2);}
+.ex-home{background:rgba(239,68,68,.15);color:var(--red);}
+
+/* WEEK GRID */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+@media(max-width:640px){.week-grid{grid-template-columns:repeat(3,1fr);}}
+.day-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;transition:all .2s;}
+.day-card:hover{border-color:rgba(232,160,32,.4);}
+.day-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:6px;}
+.day-tag{font-size:10px;padding:2px 7px;border-radius:20px;margin-bottom:6px;display:inline-block;font-weight:600;}
+.tag-arm{background:rgba(232,160,32,.2);color:var(--accent);}
+.tag-bat{background:rgba(59,130,246,.2);color:var(--accent2);}
+.tag-body{background:rgba(34,197,94,.2);color:var(--accent3);}
+.tag-rest{background:rgba(139,92,246,.2);color:#a78bfa;}
+.tag-review{background:rgba(239,68,68,.2);color:var(--red);}
+.day-items{font-size:10px;color:var(--muted);line-height:1.8;text-align:left;}
+
+/* MILESTONE */
+.milestone-wrap{position:relative;padding-left:26px;}
+.milestone-wrap::before{content:'';position:absolute;left:7px;top:20px;bottom:20px;width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent2),var(--accent3));border-radius:2px;}
+.milestone{position:relative;margin-bottom:18px;}
+.milestone::before{content:'';position:absolute;left:-22px;top:15px;width:11px;height:11px;border-radius:50%;border:2px solid;}
+.m1::before{border-color:var(--accent);background:rgba(232,160,32,.3);}
+.m2::before{border-color:var(--accent2);background:rgba(59,130,246,.3);}
+.m3::before{border-color:var(--accent3);background:rgba(34,197,94,.3);}
+.milestone-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.milestone-month{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;margin-bottom:6px;}
+.m1 .milestone-month{color:var(--accent);}.m2 .milestone-month{color:var(--accent2);}.m3 .milestone-month{color:var(--accent3);}
+.milestone-items{font-size:12px;color:var(--muted);line-height:1.8;}
+.milestone-items li{list-style:none;padding-left:14px;position:relative;}
+.milestone-items li::before{content:'→';position:absolute;left:0;opacity:.5;}
+
+/* DIET */
+.diet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.diet-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.diet-icon{font-size:22px;margin-bottom:6px;}
+.diet-title{font-size:12px;font-weight:700;margin-bottom:5px;}
+.diet-desc{font-size:11px;color:var(--muted);line-height:1.6;}
+.protein-target{background:linear-gradient(135deg,rgba(232,160,32,.1),rgba(232,160,32,.05));border:1px solid rgba(232,160,32,.3);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-top:10px;}
+.protein-num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--accent);letter-spacing:2px;line-height:1;}
+.protein-info{font-size:12px;color:var(--muted);line-height:1.6;}
+
+/* EDIT PANEL */
+.edit-btn{display:block;margin:0 auto 16px;background:rgba(232,160,32,.15);border:1px solid rgba(232,160,32,.5);color:#e8a020;font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:700;padding:9px 22px;border-radius:30px;cursor:pointer;letter-spacing:1px;transition:all .2s;}
+.edit-btn:hover{background:rgba(232,160,32,.25);}
+.editor-panel{display:none;max-width:440px;margin:0 auto 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;}
+.editor-panel h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);margin-bottom:14px;}
+.inp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.inp-wrap label{font-size:10px;color:var(--muted);letter-spacing:1px;display:block;margin-bottom:5px;}
+.inp-wrap input{width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:15px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif;}
+.inp-wrap input:focus{border-color:rgba(232,160,32,.5);}
+.apply-btn{width:100%;background:linear-gradient(135deg,#e8a020,#d4891a);border:none;color:#000;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:900;padding:11px;border-radius:10px;cursor:pointer;letter-spacing:1px;}
+.apply-msg{text-align:center;font-size:11px;color:var(--accent3);margin-top:8px;display:none;}
+
+/* ===== JOURNAL TAB ===== */
+.streak-banner{background:linear-gradient(135deg,rgba(232,160,32,.15),rgba(232,160,32,.05));border:1px solid rgba(232,160,32,.3);border-radius:16px;padding:20px 24px;display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.streak-fire{font-size:42px;line-height:1;}
+.streak-num{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--accent);letter-spacing:2px;line-height:1;}
+.streak-label{font-size:12px;color:var(--muted);}
+.journal-date{font-size:13px;color:var(--accent);font-weight:700;margin-bottom:12px;letter-spacing:1px;}
+.checklist{display:flex;flex-direction:column;gap:8px;}
+.check-item{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .2s;user-select:none;}
+.check-item:hover{border-color:rgba(232,160,32,.3);}
+.check-item.done{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05);}
+.check-box{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .2s;}
+.check-item.done .check-box{background:var(--accent3);border-color:var(--accent3);color:#000;}
+.check-text{font-size:13px;flex:1;}
+.check-item.done .check-text{color:var(--muted);text-decoration:line-through;}
+.check-badge-sm{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;}
+.progress-bar-wrap{background:var(--border);border-radius:6px;height:8px;margin:16px 0 6px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));border-radius:6px;transition:width .5s ease;}
+.progress-label{font-size:11px;color:var(--muted);text-align:right;}
+.save-log-btn{width:100%;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:var(--accent3);font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700;padding:11px;border-radius:10px;cursor:pointer;margin-top:14px;letter-spacing:1px;transition:all .2s;}
+.save-log-btn:hover{background:rgba(34,197,94,.25);}
+.log-history{margin-top:20px;}
+.log-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:12px;}
+.log-date{color:var(--muted);}
+.log-rate{font-weight:700;}
+
+/* ===== WEIGHT TAB ===== */
+.weight-input-row{display:flex;gap:10px;margin-bottom:16px;}
+.weight-input-row input{flex:1;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:16px;padding:10px 14px;border-radius:10px;outline:none;font-family:'Noto Sans TC',sans-serif;}
+.weight-input-row input:focus{border-color:rgba(232,160,32,.5);}
+.weight-add-btn{background:var(--accent);border:none;color:#000;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:900;padding:10px 20px;border-radius:10px;cursor:pointer;white-space:nowrap;}
+.weight-list{max-height:200px;overflow-y:auto;}
+.weight-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;}
+.weight-row:last-child{border-bottom:none;}
+.weight-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;opacity:.5;transition:opacity .2s;}
+.weight-del:hover{opacity:1;}
+
+/* ===== TIMER TAB ===== */
+.timer-exercises{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:20px;}
+.timer-ex-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:600;padding:10px 8px;border-radius:10px;cursor:pointer;transition:all .2s;text-align:center;}
+.timer-ex-btn:hover,.timer-ex-btn.selected{border-color:rgba(232,160,32,.5);background:rgba(232,160,32,.08);color:var(--accent);}
+.timer-display{text-align:center;padding:32px 20px;}
+.timer-ex-name{font-size:14px;color:var(--muted);margin-bottom:8px;letter-spacing:1px;}
+.timer-phase{font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;}
+.timer-phase.work{color:var(--accent3);}
+.timer-phase.rest{color:var(--accent2);}
+.timer-num{font-family:'Bebas Neue',sans-serif;font-size:96px;letter-spacing:-2px;line-height:1;margin-bottom:8px;}
+.timer-set-info{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.timer-controls{display:flex;gap:12px;justify-content:center;}
+.timer-btn{font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700;padding:12px 28px;border-radius:30px;cursor:pointer;border:none;transition:all .2s;letter-spacing:1px;}
+.timer-btn.start{background:var(--accent3);color:#000;}
+.timer-btn.stop{background:var(--red);color:#fff;}
+.timer-btn.reset{background:var(--surface);border:1px solid var(--border);color:var(--muted);}
+.timer-settings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+.ts-wrap label{font-size:10px;color:var(--muted);display:block;margin-bottom:5px;letter-spacing:1px;}
+.ts-wrap input{width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:15px;padding:8px 10px;border-radius:8px;outline:none;text-align:center;font-family:'Bebas Neue',sans-serif;}
+
+/* FOOTER */
+.footer{text-align:center;padding:28px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);letter-spacing:1px;}
+.footer span{color:var(--accent);}
 </style>
 </head>
 <body>
 
-<!-- HERO -->
+<!-- NAV -->
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="switchTab('plan')">📋 訓練計畫</div>
+  <div class="nav-tab" onclick="switchTab('journal')">📝 訓練日誌</div>
+  <div class="nav-tab" onclick="switchTab('weight')">⚖️ 體重追蹤</div>
+  <div class="nav-tab" onclick="switchTab('timer')">⏱️ 計時器</div>
+</div>
+
+<!-- ===== TAB: 訓練計畫 ===== -->
+<div id="tab-plan" class="tab-page active">
+
 <div class="hero">
-  <div class="hero-badge">⚾ 西苑高中 · 捕手專項</div>
+  <div class="hero-badge" id="hero-badge">⚾ 西苑高中 · 捕手專項</div>
   <h1>捕手訓練<br>改善計畫</h1>
   <div class="hero-sub">3個月系統化訓練 · 阻殺臂力 × 打擊擊球點</div>
 </div>
 
-<!-- EDIT BUTTON -->
-<div style="text-align:center; margin-bottom: 12px;">
-  <button onclick="toggleEditor()" id="editBtn" style="
-    background: rgba(232,160,32,0.15);
-    border: 1px solid rgba(232,160,32,0.5);
-    color: #e8a020;
-    font-family: 'Noto Sans TC', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 10px 24px;
-    border-radius: 30px;
-    cursor: pointer;
-    letter-spacing: 1px;
-    transition: all 0.2s;
-  ">✏️ 編輯選手資料</button>
+<button class="edit-btn" onclick="toggleEditor()">✏️ 編輯選手資料</button>
+
+<div class="editor-panel" id="editorPanel">
+  <h3>⚙️ 選手資料設定</h3>
+  <div class="inp-grid">
+    <div class="inp-wrap"><label>身高 (cm)</label><input id="inp-height" type="number" value="170"></div>
+    <div class="inp-wrap"><label>體重 (kg)</label><input id="inp-weight" type="number" value="79"></div>
+    <div class="inp-wrap"><label>姓名</label><input id="inp-name" type="text" value="西苑高中捕手"></div>
+    <div class="inp-wrap"><label>訓練週期 (月)</label><input id="inp-months" type="number" value="3" min="1" max="12"></div>
+  </div>
+  <button class="apply-btn" onclick="applyData()">✅ 套用更新</button>
+  <div class="apply-msg" id="apply-msg">✓ 已更新！</div>
 </div>
 
-<!-- EDITOR PANEL -->
-<div id="editorPanel" style="display:none; max-width:480px; margin:0 auto 24px; background:#161b24; border:1px solid #1e2535; border-radius:16px; padding:24px;">
-  <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color:#e8a020; margin-bottom:18px;">⚙️ 選手資料設定</div>
-
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
-    <div>
-      <label style="font-size:11px; color:#8896a7; letter-spacing:1px; display:block; margin-bottom:6px;">身高 (cm)</label>
-      <input id="inp-height" type="number" value="170" style="
-        width:100%; background:#0a0c10; border:1px solid #1e2535;
-        color:#f0f4f8; font-size:16px; padding:10px 12px;
-        border-radius:8px; outline:none; font-family:'Noto Sans TC',sans-serif;
-      ">
-    </div>
-    <div>
-      <label style="font-size:11px; color:#8896a7; letter-spacing:1px; display:block; margin-bottom:6px;">體重 (kg)</label>
-      <input id="inp-weight" type="number" value="79" style="
-        width:100%; background:#0a0c10; border:1px solid #1e2535;
-        color:#f0f4f8; font-size:16px; padding:10px 12px;
-        border-radius:8px; outline:none; font-family:'Noto Sans TC',sans-serif;
-      ">
-    </div>
-    <div>
-      <label style="font-size:11px; color:#8896a7; letter-spacing:1px; display:block; margin-bottom:6px;">姓名</label>
-      <input id="inp-name" type="text" value="西苑高中捕手" style="
-        width:100%; background:#0a0c10; border:1px solid #1e2535;
-        color:#f0f4f8; font-size:14px; padding:10px 12px;
-        border-radius:8px; outline:none; font-family:'Noto Sans TC',sans-serif;
-      ">
-    </div>
-    <div>
-      <label style="font-size:11px; color:#8896a7; letter-spacing:1px; display:block; margin-bottom:6px;">訓練週期 (月)</label>
-      <input id="inp-months" type="number" value="3" min="1" max="12" style="
-        width:100%; background:#0a0c10; border:1px solid #1e2535;
-        color:#f0f4f8; font-size:16px; padding:10px 12px;
-        border-radius:8px; outline:none; font-family:'Noto Sans TC',sans-serif;
-      ">
-    </div>
-  </div>
-
-  <button onclick="applyData()" style="
-    width:100%; background:linear-gradient(135deg,#e8a020,#d4891a);
-    border:none; color:#000; font-family:'Noto Sans TC',sans-serif;
-    font-size:14px; font-weight:900; padding:12px;
-    border-radius:10px; cursor:pointer; letter-spacing:1px;
-  ">✅ 套用更新</button>
-
-  <div id="apply-msg" style="text-align:center; font-size:12px; color:#22c55e; margin-top:10px; display:none;">
-    ✓ 已更新！
-  </div>
-</div>
-
-<!-- STATS -->
 <div class="stats-row">
-  <div class="stat-pill gold">
-    <div class="stat-val" id="disp-height">170</div>
-    <div class="stat-label">身高 cm</div>
-  </div>
-  <div class="stat-pill blue">
-    <div class="stat-val" id="disp-weight">79</div>
-    <div class="stat-label">體重 kg</div>
-  </div>
-  <div class="stat-pill green">
-    <div class="stat-val" id="disp-bmi">27.3</div>
-    <div class="stat-label">BMI</div>
-  </div>
-  <div class="stat-pill red">
-    <div class="stat-val" id="disp-protein">126g</div>
-    <div class="stat-label">每日蛋白質目標</div>
-  </div>
-  <div class="stat-pill gold">
-    <div class="stat-val" id="disp-months">3mo</div>
-    <div class="stat-label">訓練週期</div>
-  </div>
+  <div class="stat-pill gold"><div class="stat-val" id="disp-height">170</div><div class="stat-label">身高 cm</div></div>
+  <div class="stat-pill blue"><div class="stat-val" id="disp-weight">79</div><div class="stat-label">體重 kg</div></div>
+  <div class="stat-pill green"><div class="stat-val" id="disp-bmi">27.3</div><div class="stat-label">BMI</div></div>
+  <div class="stat-pill red"><div class="stat-val" id="disp-protein">126g</div><div class="stat-label">每日蛋白質</div></div>
+  <div class="stat-pill gold"><div class="stat-val" id="disp-months">3mo</div><div class="stat-label">訓練週期</div></div>
 </div>
 
 <div class="container">
 
-  <!-- PRIORITY -->
   <div class="section-title">
-    <div class="icon" style="background:rgba(232,160,32,0.15)">🎯</div>
-    <div>
-      <div class="num">SECTION 01</div>
-      <h2>改善優先順序</h2>
-    </div>
+    <div class="icon" style="background:rgba(232,160,32,.15)">🎯</div>
+    <div><div class="num">SECTION 01</div><h2>改善優先順序</h2></div>
   </div>
-
   <div class="priority-grid">
-    <div class="priority-card p1">
-      <div class="priority-num">1</div>
-      <div class="priority-badge">最優先</div>
-      <div class="priority-title">阻殺傳球臂力</div>
-      <div class="priority-bar-wrap"><div class="priority-bar"></div></div>
-      <div class="priority-desc">傳球力學修正 + 肩袖強化 + 下肢爆發力，目標：0.8秒接球→出手</div>
-    </div>
-    <div class="priority-card p2">
-      <div class="priority-num">2</div>
-      <div class="priority-badge">重要</div>
-      <div class="priority-title">打擊擊球點掌握</div>
-      <div class="priority-bar-wrap"><div class="priority-bar"></div></div>
-      <div class="priority-desc">修正被動等球習慣，建立主動出棒決策信心，穩定長打潛力</div>
-    </div>
-    <div class="priority-card p3">
-      <div class="priority-num">3</div>
-      <div class="priority-badge">輔助</div>
-      <div class="priority-title">整體體能與爆發力</div>
-      <div class="priority-bar-wrap"><div class="priority-bar"></div></div>
-      <div class="priority-desc">跳箱、深蹲跳、核心訓練，強化全身動力鏈連動</div>
-    </div>
-    <div class="priority-card p4">
-      <div class="priority-num">4</div>
-      <div class="priority-badge">長期</div>
-      <div class="priority-title">體重與體態管理</div>
-      <div class="priority-bar-wrap"><div class="priority-bar"></div></div>
-      <div class="priority-desc">增肌微降體脂，目標體脂率降至20%以下，提升起身速度</div>
-    </div>
+    <div class="priority-card p1"><div class="priority-num">1</div><div class="priority-badge">最優先</div><div class="priority-title">阻殺傳球臂力</div><div class="priority-bar-wrap"><div class="priority-bar"></div></div><div class="priority-desc">傳球力學修正 + 肩袖強化 + 下肢爆發力，目標：0.8秒接球→出手</div></div>
+    <div class="priority-card p2"><div class="priority-num">2</div><div class="priority-badge">重要</div><div class="priority-title">打擊擊球點掌握</div><div class="priority-bar-wrap"><div class="priority-bar"></div></div><div class="priority-desc">修正被動等球習慣，建立主動出棒決策信心，穩定長打潛力</div></div>
+    <div class="priority-card p3"><div class="priority-num">3</div><div class="priority-badge">輔助</div><div class="priority-title">整體體能與爆發力</div><div class="priority-bar-wrap"><div class="priority-bar"></div></div><div class="priority-desc">跳箱、深蹲跳、核心訓練，強化全身動力鏈連動</div></div>
+    <div class="priority-card p4"><div class="priority-num">4</div><div class="priority-badge">長期</div><div class="priority-title">體重與體態管理</div><div class="priority-bar-wrap"><div class="priority-bar"></div></div><div class="priority-desc">增肌微降體脂，目標體脂率降至20%以下，提升起身速度</div></div>
   </div>
 
-  <!-- RADAR + DOUGHNUT CHARTS -->
-  <div class="section-title" style="margin-top:48px">
-    <div class="icon" style="background:rgba(59,130,246,0.15)">📊</div>
-    <div>
-      <div class="num">SECTION 02</div>
-      <h2>能力評估圖表</h2>
-    </div>
+  <div class="section-title" style="margin-top:40px">
+    <div class="icon" style="background:rgba(59,130,246,.15)">📊</div>
+    <div><div class="num">SECTION 02</div><h2>能力評估圖表</h2></div>
   </div>
-
   <div class="charts-2col">
-    <div class="chart-card">
-      <h3>現況能力雷達圖</h3>
-      <p>各項能力現況評估（滿分10）</p>
-      <div class="chart-wrap">
-        <canvas id="radarChart"></canvas>
-      </div>
-    </div>
-    <div class="chart-card">
-      <h3>訓練時間分配</h3>
-      <p>每週訓練重點比例建議</p>
-      <div class="chart-wrap">
-        <canvas id="doughnutChart"></canvas>
-      </div>
-    </div>
+    <div class="chart-card"><h3>現況能力雷達圖</h3><p>各項能力現況評估（滿分10）</p><div class="chart-wrap"><canvas id="radarChart"></canvas></div></div>
+    <div class="chart-card"><h3>訓練時間分配</h3><p>每週訓練重點比例建議</p><div class="chart-wrap"><canvas id="doughnutChart"></canvas></div></div>
   </div>
 
-  <!-- EXERCISE TABLE -->
   <div class="section-title">
-    <div class="icon" style="background:rgba(232,160,32,0.15)">💪</div>
-    <div>
-      <div class="num">SECTION 03</div>
-      <h2>訓練動作清單</h2>
-    </div>
+    <div class="icon" style="background:rgba(232,160,32,.15)">💪</div>
+    <div><div class="num">SECTION 03</div><h2>訓練動作清單</h2></div>
   </div>
-
   <div class="chart-card">
     <table class="ex-table">
-      <thead>
-        <tr>
-          <th>訓練動作</th>
-          <th>類型</th>
-          <th>組數</th>
-          <th>次數</th>
-          <th>場地</th>
-        </tr>
-      </thead>
+      <thead><tr><th>訓練動作</th><th>類型</th><th>組數</th><th>次數</th><th>場地</th></tr></thead>
       <tbody>
-        <tr>
-          <td>彈力帶肩袖外旋</td>
-          <td><span class="ex-badge ex-arm">臂力</span></td>
-          <td>3組</td>
-          <td>15下</td>
-          <td>學校/家</td>
-        </tr>
-        <tr>
-          <td>彈力帶前平舉</td>
-          <td><span class="ex-badge ex-arm">臂力</span></td>
-          <td>3組</td>
-          <td>12下</td>
-          <td>學校/家</td>
-        </tr>
-        <tr>
-          <td>啞鈴側平舉</td>
-          <td><span class="ex-badge ex-arm">臂力</span></td>
-          <td>3組</td>
-          <td>12下</td>
-          <td>學校/家</td>
-        </tr>
-        <tr>
-          <td>俯身彈力帶划船</td>
-          <td><span class="ex-badge ex-arm">臂力</span></td>
-          <td>3組</td>
-          <td>15下</td>
-          <td>學校</td>
-        </tr>
-        <tr>
-          <td>跳箱訓練</td>
-          <td><span class="ex-badge ex-leg">爆發力</span></td>
-          <td>3組</td>
-          <td>8下</td>
-          <td>學校</td>
-        </tr>
-        <tr>
-          <td>深蹲跳</td>
-          <td><span class="ex-badge ex-leg">爆發力</span></td>
-          <td>3組</td>
-          <td>10下</td>
-          <td>學校/家</td>
-        </tr>
-        <tr>
-          <td>單腳跨步推蹬</td>
-          <td><span class="ex-badge ex-leg">爆發力</span></td>
-          <td>3組</td>
-          <td>各10下</td>
-          <td>學校/家</td>
-        </tr>
-        <tr>
-          <td>T座打擊</td>
-          <td><span class="ex-badge ex-bat">打擊</span></td>
-          <td>每天</td>
-          <td>50下</td>
-          <td>學校</td>
-        </tr>
-        <tr>
-          <td>乾揮棒練習</td>
-          <td><span class="ex-badge ex-bat">打擊</span></td>
-          <td>每天</td>
-          <td>100下</td>
-          <td>家</td>
-        </tr>
-        <tr>
-          <td>牆壁傳球反射</td>
-          <td><span class="ex-badge ex-home">居家</span></td>
-          <td>每天</td>
-          <td>100下</td>
-          <td>家</td>
-        </tr>
-        <tr>
-          <td>徒手傳球動作鏡前確認</td>
-          <td><span class="ex-badge ex-home">居家</span></td>
-          <td>每天</td>
-          <td>50次</td>
-          <td>家</td>
-        </tr>
+        <tr><td>彈力帶肩袖外旋</td><td><span class="ex-badge ex-arm">臂力</span></td><td>3組</td><td>15下</td><td>學校/家</td></tr>
+        <tr><td>彈力帶前平舉</td><td><span class="ex-badge ex-arm">臂力</span></td><td>3組</td><td>12下</td><td>學校/家</td></tr>
+        <tr><td>啞鈴側平舉</td><td><span class="ex-badge ex-arm">臂力</span></td><td>3組</td><td>12下</td><td>學校/家</td></tr>
+        <tr><td>俯身彈力帶划船</td><td><span class="ex-badge ex-arm">臂力</span></td><td>3組</td><td>15下</td><td>學校</td></tr>
+        <tr><td>跳箱訓練</td><td><span class="ex-badge ex-leg">爆發力</span></td><td>3組</td><td>8下</td><td>學校</td></tr>
+        <tr><td>深蹲跳</td><td><span class="ex-badge ex-leg">爆發力</span></td><td>3組</td><td>10下</td><td>學校/家</td></tr>
+        <tr><td>單腳跨步推蹬</td><td><span class="ex-badge ex-leg">爆發力</span></td><td>3組</td><td>各10下</td><td>學校/家</td></tr>
+        <tr><td>T座打擊</td><td><span class="ex-badge ex-bat">打擊</span></td><td>每天</td><td>50下</td><td>學校</td></tr>
+        <tr><td>乾揮棒練習</td><td><span class="ex-badge ex-bat">打擊</span></td><td>每天</td><td>100下</td><td>家</td></tr>
+        <tr><td>牆壁傳球反射</td><td><span class="ex-badge ex-home">居家</span></td><td>每天</td><td>100下</td><td>家</td></tr>
+        <tr><td>徒手傳球動作確認</td><td><span class="ex-badge ex-home">居家</span></td><td>每天</td><td>50次</td><td>家</td></tr>
       </tbody>
     </table>
   </div>
 
-  <!-- WEEKLY SCHEDULE -->
   <div class="section-title">
-    <div class="icon" style="background:rgba(34,197,94,0.15)">📅</div>
-    <div>
-      <div class="num">SECTION 04</div>
-      <h2>每週訓練時程</h2>
-    </div>
+    <div class="icon" style="background:rgba(34,197,94,.15)">📅</div>
+    <div><div class="num">SECTION 04</div><h2>每週訓練時程</h2></div>
   </div>
-
   <div class="week-grid">
-    <div class="day-card">
-      <div class="day-name" style="color:var(--accent)">MON</div>
-      <div class="day-tag tag-arm">臂力</div>
-      <div class="day-items">
-        學校練習<br>
-        彈力帶肩袖<br>
-        T座50下
-      </div>
-    </div>
-    <div class="day-card">
-      <div class="day-name" style="color:var(--accent2)">TUE</div>
-      <div class="day-tag tag-bat">打擊</div>
-      <div class="day-items">
-        學校練習<br>
-        牆壁傳球<br>
-        視覺化訓練
-      </div>
-    </div>
-    <div class="day-card">
-      <div class="day-name" style="color:#a78bfa">WED</div>
-      <div class="day-tag tag-rest">恢復</div>
-      <div class="day-items">
-        學校練習<br>
-        輕度伸展<br>
-        休息恢復
-      </div>
-    </div>
-    <div class="day-card">
-      <div class="day-name" style="color:var(--accent3)">THU</div>
-      <div class="day-tag tag-body">爆發力</div>
-      <div class="day-items">
-        學校練習<br>
-        跳箱/深蹲跳<br>
-        T座50下
-      </div>
-    </div>
-    <div class="day-card">
-      <div class="day-name" style="color:var(--accent)">FRI</div>
-      <div class="day-tag tag-arm">臂力</div>
-      <div class="day-items">
-        學校練習<br>
-        肩袖保養<br>
-        乾揮100下
-      </div>
-    </div>
-    <div class="day-card">
-      <div class="day-name" style="color:var(--red)">SAT</div>
-      <div class="day-tag tag-review">複習</div>
-      <div class="day-items">
-        自主加練<br>
-        鏡前力學確認<br>
-        打擊錄影分析
-      </div>
-    </div>
-    <div class="day-card">
-      <div class="day-name" style="color:#a78bfa">SUN</div>
-      <div class="day-tag tag-rest">休息</div>
-      <div class="day-items">
-        完全休息<br>
-        或輕度活動<br>
-        睡眠充足
-      </div>
-    </div>
+    <div class="day-card"><div class="day-name" style="color:var(--accent)">MON</div><div class="day-tag tag-arm">臂力</div><div class="day-items">學校練習<br>彈力帶肩袖<br>T座50下</div></div>
+    <div class="day-card"><div class="day-name" style="color:var(--accent2)">TUE</div><div class="day-tag tag-bat">打擊</div><div class="day-items">學校練習<br>牆壁傳球<br>視覺化訓練</div></div>
+    <div class="day-card"><div class="day-name" style="color:#a78bfa">WED</div><div class="day-tag tag-rest">恢復</div><div class="day-items">學校練習<br>輕度伸展<br>休息恢復</div></div>
+    <div class="day-card"><div class="day-name" style="color:var(--accent3)">THU</div><div class="day-tag tag-body">爆發力</div><div class="day-items">學校練習<br>跳箱/深蹲跳<br>T座50下</div></div>
+    <div class="day-card"><div class="day-name" style="color:var(--accent)">FRI</div><div class="day-tag tag-arm">臂力</div><div class="day-items">學校練習<br>肩袖保養<br>乾揮100下</div></div>
+    <div class="day-card"><div class="day-name" style="color:var(--red)">SAT</div><div class="day-tag tag-review">複習</div><div class="day-items">自主加練<br>鏡前力學確認<br>打擊錄影</div></div>
+    <div class="day-card"><div class="day-name" style="color:#a78bfa">SUN</div><div class="day-tag tag-rest">休息</div><div class="day-items">完全休息<br>或輕度活動<br>睡眠充足</div></div>
   </div>
 
-  <!-- PROGRESS CHART -->
   <div class="section-title">
-    <div class="icon" style="background:rgba(34,197,94,0.15)">📈</div>
+    <div class="icon" style="background:rgba(34,197,94,.15)">📈</div>
+    <div><div class="num">SECTION 05</div><h2>3個月進步預測</h2></div>
+  </div>
+  <div class="chart-card">
+    <h3>能力成長預測曲線</h3><p>臂力 × 打擊精準度 × 整體爆發力（預估成長指數）</p>
+    <div class="chart-wrap" style="height:260px"><canvas id="progressChart"></canvas></div>
+  </div>
+
+  <div class="section-title">
+    <div class="icon" style="background:rgba(232,160,32,.15)">🏆</div>
+    <div><div class="num">SECTION 06</div><h2>各月進步指標</h2></div>
+  </div>
+  <div class="milestone-wrap">
+    <div class="milestone m1"><div class="milestone-card"><div class="milestone-month">第 1 個月 — 動作建立期</div><ul class="milestone-items"><li>傳球力學動作穩定（鏡前確認手肘高度正確）</li><li>T座打擊擊球點穩定，不再打出弱滾地球</li><li>彈力帶訓練動作完整、不代償</li><li>每日自主練習習慣養成</li></ul></div></div>
+    <div class="milestone m2"><div class="milestone-card"><div class="milestone-month">第 2 個月 — 力量累積期</div><ul class="milestone-items"><li>傳球彈道明顯變平、球速感覺加快</li><li>實際打席中主動出棒次數增加</li><li>起身傳球速度縮短至 1 秒以內</li><li>深蹲跳組數與高度提升</li></ul></div></div>
+    <div class="milestone m3"><div class="milestone-card"><div class="milestone-month">第 3 個月 — 實戰整合期</div><ul class="milestone-items"><li>實際比賽阻殺率提升，教練正向回饋</li><li>安打率提升，長打出現頻率更穩定</li><li>目標接球→出手 0.8 秒</li><li>體重維持，體脂感官明顯改善</li></ul></div></div>
+  </div>
+
+  <div class="section-title">
+    <div class="icon" style="background:rgba(239,68,68,.15)">🍱</div>
+    <div><div class="num">SECTION 07</div><h2>飲食與體態建議</h2></div>
+  </div>
+  <div class="diet-grid">
+    <div class="diet-card"><div class="diet-icon">🥚</div><div class="diet-title">早餐重點</div><div class="diet-desc">確保蛋白質攝取：雞蛋、豆漿、雞胸肉，搭配適量碳水</div></div>
+    <div class="diet-card"><div class="diet-icon">⚡</div><div class="diet-title">訓練後30分鐘</div><div class="diet-desc">蛋白質 + 碳水黃金窗口，促進肌肉合成與恢復</div></div>
+    <div class="diet-card"><div class="diet-icon">🚫</div><div class="diet-title">減少攝取</div><div class="diet-desc">精緻糖、含糖飲料、炸物，影響體脂與爆發力</div></div>
+    <div class="diet-card"><div class="diet-icon">💧</div><div class="diet-title">水分補充</div><div class="diet-desc">每日至少 2,500ml，訓練日增加至 3,000ml</div></div>
+  </div>
+  <div class="protein-target">
+    <div class="protein-num" id="disp-protein2">126g</div>
+    <div class="protein-info"><strong style="color:var(--text)">每日蛋白質目標</strong><br><span id="disp-protein-formula">計算公式：體重 79kg × 1.6 = 126g/天</span><br>分配於3~4餐攝取，避免一次過量</div>
+  </div>
+</div>
+</div><!-- end tab-plan -->
+
+<!-- ===== TAB: 訓練日誌 ===== -->
+<div id="tab-journal" class="tab-page">
+<div class="container" style="padding-top:24px">
+
+  <div class="streak-banner">
+    <div class="streak-fire">🔥</div>
     <div>
-      <div class="num">SECTION 05</div>
-      <h2>3個月進步預測</h2>
+      <div class="streak-num" id="streak-num">0</div>
+      <div class="streak-label">連續訓練天數</div>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+      <div style="font-size:22px" id="streak-emoji">💪</div>
+      <div style="font-size:11px;color:var(--muted)" id="streak-msg">開始記錄吧！</div>
     </div>
   </div>
 
   <div class="chart-card">
-    <h3>能力成長預測曲線</h3>
-    <p>臂力 × 打擊精準度 × 整體爆發力（預估成長指數）</p>
-    <div class="chart-wrap" style="height:280px">
-      <canvas id="progressChart"></canvas>
-    </div>
+    <div class="journal-date" id="today-date"></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">勾選今天完成的訓練項目：</div>
+    <div class="checklist" id="checklist"></div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="progress-label" id="progress-label">0 / 0 完成</div>
+    <button class="save-log-btn" onclick="saveLog()">💾 儲存今天的訓練紀錄</button>
   </div>
 
-  <!-- MILESTONES -->
-  <div class="section-title">
-    <div class="icon" style="background:rgba(232,160,32,0.15)">🏆</div>
-    <div>
-      <div class="num">SECTION 06</div>
-      <h2>各月進步指標</h2>
+  <div class="log-history">
+    <div class="section-title" style="margin-top:16px">
+      <div class="icon" style="background:rgba(59,130,246,.15)">📖</div>
+      <div><div class="num">HISTORY</div><h2>歷史紀錄</h2></div>
     </div>
+    <div id="log-history-list"></div>
   </div>
-
-  <div class="milestone-wrap">
-    <div class="milestone m1">
-      <div class="milestone-card">
-        <div class="milestone-month">第 1 個月 — 動作建立期</div>
-        <ul class="milestone-items">
-          <li>傳球力學動作穩定（鏡前確認手肘高度正確）</li>
-          <li>T座打擊擊球點穩定，不再打出弱滾地球</li>
-          <li>彈力帶訓練動作完整、不代償</li>
-          <li>每日自主練習習慣養成</li>
-        </ul>
-      </div>
-    </div>
-    <div class="milestone m2">
-      <div class="milestone-card">
-        <div class="milestone-month">第 2 個月 — 力量累積期</div>
-        <ul class="milestone-items">
-          <li>傳球彈道明顯變平、球速感覺加快</li>
-          <li>實際打席中主動出棒次數增加</li>
-          <li>起身傳球速度縮短至 1 秒以內</li>
-          <li>深蹲跳組數與高度提升</li>
-        </ul>
-      </div>
-    </div>
-    <div class="milestone m3">
-      <div class="milestone-card">
-        <div class="milestone-month">第 3 個月 — 實戰整合期</div>
-        <ul class="milestone-items">
-          <li>實際比賽阻殺率提升，教練正向回饋</li>
-          <li>安打率提升，長打出現頻率更穩定</li>
-          <li>目標接球→出手 0.8 秒</li>
-          <li>體重維持，體脂感官明顯改善</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- DIET -->
-  <div class="section-title">
-    <div class="icon" style="background:rgba(239,68,68,0.15)">🍱</div>
-    <div>
-      <div class="num">SECTION 07</div>
-      <h2>飲食與體態建議</h2>
-    </div>
-  </div>
-
-  <div class="diet-grid">
-    <div class="diet-card">
-      <div class="diet-icon">🥚</div>
-      <div class="diet-title">早餐重點</div>
-      <div class="diet-desc">確保蛋白質攝取：雞蛋、豆漿、雞胸肉，搭配適量碳水補充訓練能量</div>
-    </div>
-    <div class="diet-card">
-      <div class="diet-icon">⚡</div>
-      <div class="diet-title">訓練後30分鐘</div>
-      <div class="diet-desc">蛋白質 + 碳水黃金窗口，促進肌肉合成與恢復（非常關鍵）</div>
-    </div>
-    <div class="diet-card">
-      <div class="diet-icon">🚫</div>
-      <div class="diet-title">減少攝取</div>
-      <div class="diet-desc">精緻糖、含糖飲料、炸物。這類食物會增加體脂，影響爆發力</div>
-    </div>
-    <div class="diet-card">
-      <div class="diet-icon">💧</div>
-      <div class="diet-title">水分補充</div>
-      <div class="diet-desc">每日至少 2,500ml，訓練日增加至 3,000ml，維持肌肉功能</div>
-    </div>
-  </div>
-
-  <div class="protein-target">
-    <div class="protein-num" id="disp-protein2">126g</div>
-    <div class="protein-info">
-      <strong style="color:var(--text)">每日蛋白質目標</strong><br>
-      <span id="disp-protein-formula">計算公式：體重 79kg × 1.6 = 126g/天</span><br>
-      分配於3~4餐攝取，避免一次過量
-    </div>
-  </div>
-
+</div>
 </div>
 
-<div class="footer">
-  ⚾ 西苑高中捕手訓練計畫 · 由 <span>Lyra × Claude</span> 生成 · 請配合教練指導調整
+<!-- ===== TAB: 體重追蹤 ===== -->
+<div id="tab-weight" class="tab-page">
+<div class="container" style="padding-top:24px">
+
+  <div class="section-title" style="margin-top:0">
+    <div class="icon" style="background:rgba(59,130,246,.15)">⚖️</div>
+    <div><div class="num">WEIGHT TRACKER</div><h2>體重軌跡</h2></div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:14px">
+    <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center">
+      <div style="flex:1">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:5px;letter-spacing:1px">輸入今日體重 (kg)</div>
+        <div class="weight-input-row" style="margin:0">
+          <input id="weight-input" type="number" step="0.1" placeholder="例：79.5">
+          <button class="weight-add-btn" onclick="addWeight()">+ 新增</button>
+        </div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:220px"><canvas id="weightChart"></canvas></div>
+  </div>
+
+  <div class="chart-card">
+    <h3>體重紀錄</h3>
+    <div class="weight-list" id="weight-list"></div>
+    <div style="text-align:center;margin-top:12px">
+      <button onclick="clearWeights()" style="background:none;border:1px solid rgba(239,68,68,.3);color:var(--red);font-family:'Noto Sans TC',sans-serif;font-size:11px;padding:7px 16px;border-radius:20px;cursor:pointer;">清除所有體重紀錄</button>
+    </div>
+  </div>
 </div>
+</div>
+
+<!-- ===== TAB: 計時器 ===== -->
+<div id="tab-timer" class="tab-page">
+<div class="container" style="padding-top:24px">
+
+  <div class="section-title" style="margin-top:0">
+    <div class="icon" style="background:rgba(34,197,94,.15)">⏱️</div>
+    <div><div class="num">TRAINING TIMER</div><h2>訓練計時器</h2></div>
+  </div>
+
+  <div class="chart-card">
+    <h3 style="margin-bottom:12px">選擇訓練動作</h3>
+    <div class="timer-exercises" id="timer-exercises"></div>
+  </div>
+
+  <div class="chart-card">
+    <h3 style="margin-bottom:12px">計時設定</h3>
+    <div class="timer-settings">
+      <div class="ts-wrap"><label>組數</label><input id="ts-sets" type="number" value="3" min="1" max="20"></div>
+      <div class="ts-wrap"><label>訓練秒數</label><input id="ts-work" type="number" value="30" min="5" max="300"></div>
+      <div class="ts-wrap"><label>休息秒數</label><input id="ts-rest" type="number" value="60" min="5" max="300"></div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="timer-display">
+      <div class="timer-ex-name" id="timer-ex-name">請選擇動作</div>
+      <div class="timer-phase work" id="timer-phase">訓練中</div>
+      <div class="timer-num" id="timer-num" style="color:var(--accent3)">00</div>
+      <div class="timer-set-info" id="timer-set-info">第 - / - 組</div>
+      <div class="timer-controls">
+        <button class="timer-btn start" id="timer-start-btn" onclick="timerStart()">▶ 開始</button>
+        <button class="timer-btn reset" onclick="timerReset()">↺ 重置</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="footer" id="footer-el">⚾ 西苑高中捕手訓練計畫 · 由 <span>Lyra × Claude</span> 生成 · 請配合教練指導調整</div>
 
 <script>
-  // RADAR CHART
-  const radarCtx = document.getElementById('radarChart').getContext('2d');
-  new Chart(radarCtx, {
+// ===== TAB SWITCH =====
+function switchTab(id) {
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'weight') renderWeightChart();
+}
+
+// ===== EDITOR =====
+function toggleEditor() {
+  const p = document.getElementById('editorPanel');
+  const b = document.querySelector('.edit-btn');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+  b.textContent = p.style.display === 'none' ? '✏️ 編輯選手資料' : '✖ 關閉編輯';
+}
+function applyData() {
+  const h = parseFloat(document.getElementById('inp-height').value) || 170;
+  const w = parseFloat(document.getElementById('inp-weight').value) || 79;
+  const name = document.getElementById('inp-name').value || '西苑高中捕手';
+  const months = parseInt(document.getElementById('inp-months').value) || 3;
+  const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+  const protein = Math.round(w * 1.6);
+  document.getElementById('disp-height').textContent = h;
+  document.getElementById('disp-weight').textContent = w;
+  document.getElementById('disp-bmi').textContent = bmi;
+  document.getElementById('disp-protein').textContent = protein + 'g';
+  document.getElementById('disp-months').textContent = months + 'mo';
+  document.getElementById('disp-protein2').textContent = protein + 'g';
+  document.getElementById('disp-protein-formula').textContent = '計算公式：體重 ' + w + 'kg × 1.6 = ' + protein + 'g/天';
+  document.getElementById('hero-badge').textContent = '⚾ ' + name + ' · 捕手專項';
+  document.getElementById('footer-el').innerHTML = '⚾ ' + name + '訓練計畫 · 由 <span style="color:var(--accent)">Lyra × Claude</span> 生成 · 請配合教練指導調整';
+  const msg = document.getElementById('apply-msg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 2000);
+}
+
+// ===== CHARTS =====
+window.addEventListener('load', () => {
+  new Chart(document.getElementById('radarChart').getContext('2d'), {
     type: 'radar',
     data: {
       labels: ['臂力', '傳球速度', '打擊精準', '爆發力', '體能耐力', '守備反應'],
-      datasets: [{
-        label: '現況',
-        data: [4, 5, 4, 6, 6, 7],
-        backgroundColor: 'rgba(232,160,32,0.15)',
-        borderColor: 'rgba(232,160,32,0.8)',
-        pointBackgroundColor: 'var(--accent)',
-        pointBorderColor: '#fff',
-        pointRadius: 4,
-        borderWidth: 2
-      }, {
-        label: '3個月目標',
-        data: [7, 7.5, 7, 8, 7.5, 8],
-        backgroundColor: 'rgba(59,130,246,0.1)',
-        borderColor: 'rgba(59,130,246,0.6)',
-        pointBackgroundColor: 'var(--accent2)',
-        pointBorderColor: '#fff',
-        pointRadius: 4,
-        borderWidth: 2,
-        borderDash: [5, 3]
-      }]
+      datasets: [
+        { label: '現況', data: [4,5,4,6,6,7], backgroundColor: 'rgba(232,160,32,.15)', borderColor: 'rgba(232,160,32,.8)', pointBackgroundColor: '#e8a020', pointBorderColor: '#fff', pointRadius: 4, borderWidth: 2 },
+        { label: '3個月目標', data: [7,7.5,7,8,7.5,8], backgroundColor: 'rgba(59,130,246,.1)', borderColor: 'rgba(59,130,246,.6)', pointBackgroundColor: '#3b82f6', pointBorderColor: '#fff', pointRadius: 4, borderWidth: 2, borderDash: [5,3] }
+      ]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 }
-        }
-      },
-      scales: {
-        r: {
-          min: 0, max: 10,
-          ticks: { stepSize: 2, color: '#8896a7', font: { size: 10 }, backdropColor: 'transparent' },
-          grid: { color: 'rgba(255,255,255,0.06)' },
-          angleLines: { color: 'rgba(255,255,255,0.06)' },
-          pointLabels: { color: '#f0f4f8', font: { size: 12 } }
-        }
-      }
-    }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 } } }, scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, color: '#8896a7', font: { size: 10 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,.06)' }, angleLines: { color: 'rgba(255,255,255,.06)' }, pointLabels: { color: '#f0f4f8', font: { size: 12 } } } } }
   });
-
-  // DOUGHNUT CHART
-  const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
-  new Chart(doughnutCtx, {
+  new Chart(document.getElementById('doughnutChart').getContext('2d'), {
     type: 'doughnut',
-    data: {
-      labels: ['阻殺臂力', '打擊訓練', '爆發力體能', '體態飲食'],
-      datasets: [{
-        data: [40, 30, 20, 10],
-        backgroundColor: [
-          'rgba(232,160,32,0.8)',
-          'rgba(59,130,246,0.8)',
-          'rgba(34,197,94,0.8)',
-          'rgba(239,68,68,0.8)'
-        ],
-        borderColor: '#161b24',
-        borderWidth: 3,
-        hoverOffset: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '65%',
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            color: '#8896a7',
-            font: { size: 11 },
-            boxWidth: 12,
-            padding: 12
-          }
-        }
-      }
-    }
+    data: { labels: ['阻殺臂力','打擊訓練','爆發力體能','體態飲食'], datasets: [{ data: [40,30,20,10], backgroundColor: ['rgba(232,160,32,.8)','rgba(59,130,246,.8)','rgba(34,197,94,.8)','rgba(239,68,68,.8)'], borderColor: '#161b24', borderWidth: 3, hoverOffset: 8 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12, padding: 12 } } } }
   });
-
-  // PROGRESS LINE CHART
-  const progressCtx = document.getElementById('progressChart').getContext('2d');
-  new Chart(progressCtx, {
+  new Chart(document.getElementById('progressChart').getContext('2d'), {
     type: 'line',
     data: {
-      labels: ['開始', '第2週', '第4週', '第6週', '第8週', '第10週', '第12週'],
+      labels: ['開始','第2週','第4週','第6週','第8週','第10週','第12週'],
+      datasets: [
+        { label: '阻殺臂力', data: [40,48,56,63,68,73,78], borderColor: 'rgba(232,160,32,.9)', backgroundColor: 'rgba(232,160,32,.08)', tension: 0.4, fill: true, pointBackgroundColor: '#e8a020', pointRadius: 4 },
+        { label: '打擊精準度', data: [40,44,50,58,64,69,75], borderColor: 'rgba(59,130,246,.9)', backgroundColor: 'rgba(59,130,246,.06)', tension: 0.4, fill: true, pointBackgroundColor: '#3b82f6', pointRadius: 4 },
+        { label: '整體爆發力', data: [50,54,58,63,67,71,76], borderColor: 'rgba(34,197,94,.9)', backgroundColor: 'rgba(34,197,94,.06)', tension: 0.4, fill: true, pointBackgroundColor: '#22c55e', pointRadius: 4 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 } } }, scales: { x: { ticks: { color: '#8896a7', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.04)' } }, y: { min: 30, max: 85, ticks: { color: '#8896a7', font: { size: 11 }, callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,.04)' } } } }
+  });
+  initJournal();
+  renderWeightList();
+  initTimer();
+});
+
+// ===== JOURNAL =====
+const EXERCISES = [
+  { text: '彈力帶肩袖外旋 3組×15下', badge: '臂力', cls: 'ex-arm' },
+  { text: '彈力帶前平舉 3組×12下', badge: '臂力', cls: 'ex-arm' },
+  { text: '啞鈴側平舉 3組×12下', badge: '臂力', cls: 'ex-arm' },
+  { text: '俯身彈力帶划船 3組×15下', badge: '臂力', cls: 'ex-arm' },
+  { text: '跳箱訓練 3組×8下', badge: '爆發力', cls: 'ex-leg' },
+  { text: '深蹲跳 3組×10下', badge: '爆發力', cls: 'ex-leg' },
+  { text: 'T座打擊 50下', badge: '打擊', cls: 'ex-bat' },
+  { text: '乾揮棒練習 100下', badge: '打擊', cls: 'ex-bat' },
+  { text: '牆壁傳球反射 100下', badge: '居家', cls: 'ex-home' },
+  { text: '徒手傳球動作確認 50次', badge: '居家', cls: 'ex-home' },
+];
+
+let checked = new Set();
+
+function initJournal() {
+  const today = new Date();
+  document.getElementById('today-date').textContent = '📅 ' + today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日';
+  const cl = document.getElementById('checklist');
+  cl.innerHTML = '';
+  EXERCISES.forEach((ex, i) => {
+    const div = document.createElement('div');
+    div.className = 'check-item';
+    div.id = 'check-' + i;
+    div.onclick = () => toggleCheck(i, div);
+    div.innerHTML = '<div class="check-box" id="cb-' + i + '"></div><span class="check-text">' + ex.text + '</span><span class="ex-badge ' + ex.cls + ' check-badge-sm">' + ex.badge + '</span>';
+    cl.appendChild(div);
+  });
+  updateProgress();
+  renderStreak();
+  renderLogHistory();
+}
+
+function toggleCheck(i, div) {
+  if (checked.has(i)) { checked.delete(i); div.classList.remove('done'); document.getElementById('cb-' + i).textContent = ''; }
+  else { checked.add(i); div.classList.add('done'); document.getElementById('cb-' + i).textContent = '✓'; }
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = EXERCISES.length, done = checked.size;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = done + ' / ' + total + ' 完成 (' + pct + '%)';
+}
+
+function saveLog() {
+  const today = getTodayStr();
+  const logs = getLogs();
+  const pct = Math.round(checked.size / EXERCISES.length * 100);
+  logs[today] = { done: checked.size, total: EXERCISES.length, pct };
+  localStorage.setItem('catcher_logs', JSON.stringify(logs));
+  renderStreak();
+  renderLogHistory();
+  alert('✅ 訓練紀錄已儲存！今日完成率：' + pct + '%');
+}
+
+function getLogs() {
+  try { return JSON.parse(localStorage.getItem('catcher_logs') || '{}'); } catch { return {}; }
+}
+
+function getTodayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function renderStreak() {
+  const logs = getLogs();
+  let streak = 0, d = new Date();
+  for (let i = 0; i < 365; i++) {
+    const s = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    if (logs[s]) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  document.getElementById('streak-num').textContent = streak;
+  const msgs = [[0,'💪','開始記錄吧！'],[1,'🌱','很好的開始！'],[3,'🔥','連續三天！'],[7,'⭐','一週不間斷！'],[14,'🚀','兩週超強！'],[30,'👑','一個月王者！']];
+  let emoji = '💪', msg = '開始記錄吧！';
+  msgs.forEach(([n, e, m]) => { if (streak >= n) { emoji = e; msg = m; } });
+  document.getElementById('streak-emoji').textContent = emoji;
+  document.getElementById('streak-msg').textContent = msg;
+}
+
+function renderLogHistory() {
+  const logs = getLogs();
+  const keys = Object.keys(logs).sort().reverse().slice(0, 14);
+  const el = document.getElementById('log-history-list');
+  if (!keys.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px">尚無紀錄，完成今天的訓練後儲存！</div>'; return; }
+  el.innerHTML = keys.map(k => {
+    const l = logs[k]; const color = l.pct >= 80 ? 'var(--accent3)' : l.pct >= 50 ? 'var(--accent)' : 'var(--red)';
+    return '<div class="log-row"><span class="log-date">' + k + '</span><span class="log-rate" style="color:' + color + '">' + l.done + '/' + l.total + '項 (' + l.pct + '%)</span></div>';
+  }).join('');
+}
+
+// ===== WEIGHT =====
+let weightChartInst = null;
+
+function getWeights() {
+  try { return JSON.parse(localStorage.getItem('catcher_weights') || '[]'); } catch { return []; }
+}
+
+function addWeight() {
+  const val = parseFloat(document.getElementById('weight-input').value);
+  if (!val || val < 30 || val > 200) { alert('請輸入合理的體重（30~200 kg）'); return; }
+  const weights = getWeights();
+  const today = getTodayStr();
+  const idx = weights.findIndex(w => w.date === today);
+  if (idx >= 0) weights[idx].kg = val; else weights.push({ date: today, kg: val });
+  weights.sort((a, b) => a.date.localeCompare(b.date));
+  localStorage.setItem('catcher_weights', JSON.stringify(weights));
+  document.getElementById('weight-input').value = '';
+  renderWeightList();
+  renderWeightChart();
+}
+
+function renderWeightList() {
+  const weights = getWeights().slice().reverse();
+  const el = document.getElementById('weight-list');
+  if (!weights.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">尚無體重紀錄</div>'; return; }
+  el.innerHTML = weights.map((w, i) => {
+    const diff = i < weights.length - 1 ? (w.kg - weights[i+1].kg).toFixed(1) : null;
+    const diffStr = diff !== null ? (diff > 0 ? '<span style="color:var(--red)">▲' + diff + '</span>' : diff < 0 ? '<span style="color:var(--accent3)">▼' + Math.abs(diff) + '</span>' : '<span style="color:var(--muted)">—</span>') : '';
+    return '<div class="weight-row"><span style="color:var(--muted)">' + w.date + '</span><span style="font-weight:700">' + w.kg + ' kg</span><span>' + diffStr + '</span><button class="weight-del" onclick="deleteWeight(\'' + w.date + '\')">✕</button></div>';
+  }).join('');
+}
+
+function deleteWeight(date) {
+  const weights = getWeights().filter(w => w.date !== date);
+  localStorage.setItem('catcher_weights', JSON.stringify(weights));
+  renderWeightList();
+  renderWeightChart();
+}
+
+function clearWeights() {
+  if (confirm('確定要清除所有體重紀錄嗎？')) {
+    localStorage.removeItem('catcher_weights');
+    renderWeightList();
+    renderWeightChart();
+  }
+}
+
+function renderWeightChart() {
+  const weights = getWeights();
+  const ctx = document.getElementById('weightChart').getContext('2d');
+  if (weightChartInst) { weightChartInst.destroy(); weightChartInst = null; }
+  if (!weights.length) return;
+  weightChartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: weights.map(w => w.date.slice(5)),
       datasets: [{
-        label: '阻殺臂力',
-        data: [40, 48, 56, 63, 68, 73, 78],
-        borderColor: 'rgba(232,160,32,0.9)',
-        backgroundColor: 'rgba(232,160,32,0.08)',
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: 'var(--accent)',
-        pointRadius: 4
-      }, {
-        label: '打擊精準度',
-        data: [40, 44, 50, 58, 64, 69, 75],
-        borderColor: 'rgba(59,130,246,0.9)',
-        backgroundColor: 'rgba(59,130,246,0.06)',
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: 'var(--accent2)',
-        pointRadius: 4
-      }, {
-        label: '整體爆發力',
-        data: [50, 54, 58, 63, 67, 71, 76],
-        borderColor: 'rgba(34,197,94,0.9)',
-        backgroundColor: 'rgba(34,197,94,0.06)',
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: 'var(--accent3)',
-        pointRadius: 4
+        label: '體重 (kg)', data: weights.map(w => w.kg),
+        borderColor: 'rgba(59,130,246,.9)', backgroundColor: 'rgba(59,130,246,.08)',
+        tension: 0.3, fill: true, pointBackgroundColor: '#3b82f6', pointRadius: 5, pointHoverRadius: 7
       }]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { intersect: false, mode: 'index' },
-      plugins: {
-        legend: {
-          labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 }
-        }
-      },
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 } } },
       scales: {
-        x: {
-          ticks: { color: '#8896a7', font: { size: 11 } },
-          grid: { color: 'rgba(255,255,255,0.04)' }
-        },
-        y: {
-          min: 30, max: 85,
-          ticks: {
-            color: '#8896a7',
-            font: { size: 11 },
-            callback: v => v + '%'
-          },
-          grid: { color: 'rgba(255,255,255,0.04)' }
-        }
+        x: { ticks: { color: '#8896a7', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,.04)' } },
+        y: { ticks: { color: '#8896a7', font: { size: 11 }, callback: v => v + 'kg' }, grid: { color: 'rgba(255,255,255,.04)' } }
       }
     }
   });
+}
 
-  // ===== 編輯器功能 =====
-  function toggleEditor() {
-    const panel = document.getElementById('editorPanel');
-    const btn = document.getElementById('editBtn');
-    if (panel.style.display === 'none') {
-      panel.style.display = 'block';
-      btn.textContent = '✖ 關閉編輯';
-    } else {
-      panel.style.display = 'none';
-      btn.textContent = '✏️ 編輯選手資料';
+// ===== TIMER =====
+let timerInterval = null;
+let timerRunning = false;
+let timerPhase = 'work'; // 'work' or 'rest'
+let timerSec = 0;
+let timerCurrentSet = 0;
+let timerTotalSets = 3;
+let selectedExercise = null;
+
+function initTimer() {
+  const wrap = document.getElementById('timer-exercises');
+  wrap.innerHTML = '';
+  EXERCISES.forEach((ex, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'timer-ex-btn';
+    btn.textContent = ex.text.split(' ')[0];
+    btn.onclick = () => {
+      document.querySelectorAll('.timer-ex-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedExercise = ex.text;
+      document.getElementById('timer-ex-name').textContent = ex.text;
+      timerReset();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function timerStart() {
+  if (!selectedExercise) { alert('請先選擇一個訓練動作！'); return; }
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('timer-start-btn').textContent = '▶ 繼續';
+    document.getElementById('timer-start-btn').className = 'timer-btn start';
+    return;
+  }
+  if (timerCurrentSet === 0) {
+    timerTotalSets = parseInt(document.getElementById('ts-sets').value) || 3;
+    timerPhase = 'work';
+    timerSec = parseInt(document.getElementById('ts-work').value) || 30;
+    timerCurrentSet = 1;
+  }
+  timerRunning = true;
+  document.getElementById('timer-start-btn').textContent = '⏸ 暫停';
+  document.getElementById('timer-start-btn').className = 'timer-btn stop';
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerSec--;
+    if (timerSec <= 0) {
+      if (timerPhase === 'work') {
+        if (timerCurrentSet >= timerTotalSets) {
+          clearInterval(timerInterval);
+          timerRunning = false;
+          document.getElementById('timer-num').textContent = '完成';
+          document.getElementById('timer-phase').textContent = '全部完成！';
+          document.getElementById('timer-start-btn').textContent = '▶ 開始';
+          document.getElementById('timer-start-btn').className = 'timer-btn start';
+          timerCurrentSet = 0;
+          return;
+        }
+        timerPhase = 'rest';
+        timerSec = parseInt(document.getElementById('ts-rest').value) || 60;
+      } else {
+        timerPhase = 'work';
+        timerCurrentSet++;
+        timerSec = parseInt(document.getElementById('ts-work').value) || 30;
+      }
     }
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-num');
+  const phase = document.getElementById('timer-phase');
+  const info = document.getElementById('timer-set-info');
+  el.textContent = String(timerSec).padStart(2, '0');
+  if (timerPhase === 'work') {
+    el.style.color = 'var(--accent3)';
+    phase.textContent = '訓練中';
+    phase.className = 'timer-phase work';
+  } else {
+    el.style.color = 'var(--accent2)';
+    phase.textContent = '休息中';
+    phase.className = 'timer-phase rest';
   }
+  info.textContent = '第 ' + timerCurrentSet + ' / ' + timerTotalSets + ' 組';
+}
 
-  function applyData() {
-    const h = parseFloat(document.getElementById('inp-height').value) || 170;
-    const w = parseFloat(document.getElementById('inp-weight').value) || 79;
-    const name = document.getElementById('inp-name').value || '西苑高中捕手';
-    const months = parseInt(document.getElementById('inp-months').value) || 3;
-
-    const bmi = (w / ((h / 100) ** 2)).toFixed(1);
-    const protein = Math.round(w * 1.6);
-
-    document.getElementById('disp-height').textContent = h;
-    document.getElementById('disp-weight').textContent = w;
-    document.getElementById('disp-bmi').textContent = bmi;
-    document.getElementById('disp-protein').textContent = protein + 'g';
-    document.getElementById('disp-months').textContent = months + 'mo';
-    document.getElementById('disp-protein2').textContent = protein + 'g';
-    document.getElementById('disp-protein-formula').textContent =
-      '計算公式：體重 ' + w + 'kg × 1.6 = ' + protein + 'g/天';
-
-    document.querySelector('.hero-badge').textContent = '⚾ ' + name + ' · 捕手專項';
-    document.querySelector('.footer').innerHTML =
-      '⚾ ' + name + '訓練計畫 · 由 <span style="color:var(--accent)">Lyra × Claude</span> 生成 · 請配合教練指導調整';
-
-    const msg = document.getElementById('apply-msg');
-    msg.style.display = 'block';
-    setTimeout(() => { msg.style.display = 'none'; }, 2000);
-  }
+function timerReset() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerCurrentSet = 0;
+  timerPhase = 'work';
+  timerSec = parseInt(document.getElementById('ts-work').value) || 30;
+  document.getElementById('timer-num').textContent = String(timerSec).padStart(2,'0');
+  document.getElementById('timer-num').style.color = 'var(--accent3)';
+  document.getElementById('timer-phase').textContent = '訓練中';
+  document.getElementById('timer-phase').className = 'timer-phase work';
+  document.getElementById('timer-set-info').textContent = '第 - / - 組';
+  document.getElementById('timer-start-btn').textContent = '▶ 開始';
+  document.getElementById('timer-start-btn').className = 'timer-btn start';
+}
 </script>
 </body>
 </html>
