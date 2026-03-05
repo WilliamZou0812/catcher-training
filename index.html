@@ -512,26 +512,94 @@
   <div class="hero-sub">3個月系統化訓練 · 阻殺臂力 × 打擊擊球點</div>
 </div>
 
+<!-- EDIT BUTTON -->
+<div style="text-align:center; margin-bottom: 12px;">
+  <button onclick="toggleEditor()" id="editBtn" style="
+    background: rgba(232,160,32,0.15);
+    border: 1px solid rgba(232,160,32,0.5);
+    color: #e8a020;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  ">✏️ 編輯選手資料</button>
+</div>
+
+<!-- EDITOR PANEL -->
+<div id="editorPanel" style="display:none; max-width:480px; margin:0 auto 24px; background:#161b24; border:1px solid #1e2535; border-radius:16px; padding:24px;">
+  <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color:#e8a020; margin-bottom:18px;">⚙️ 選手資料設定</div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+    <div>
+      <label style="font-size:11px; color:#8896a7; letter-spacing:1px; display:block; margin-bottom:6px;">身高 (cm)</label>
+      <input id="inp-height" type="number" value="170" style="
+        width:100%; background:#0a0c10; border:1px solid #1e2535;
+        color:#f0f4f8; font-size:16px; padding:10px 12px;
+        border-radius:8px; outline:none; font-family:'Noto Sans TC',sans-serif;
+      ">
+    </div>
+    <div>
+      <label style="font-size:11px; color:#8896a7; letter-spacing:1px; display:block; margin-bottom:6px;">體重 (kg)</label>
+      <input id="inp-weight" type="number" value="79" style="
+        width:100%; background:#0a0c10; border:1px solid #1e2535;
+        color:#f0f4f8; font-size:16px; padding:10px 12px;
+        border-radius:8px; outline:none; font-family:'Noto Sans TC',sans-serif;
+      ">
+    </div>
+    <div>
+      <label style="font-size:11px; color:#8896a7; letter-spacing:1px; display:block; margin-bottom:6px;">姓名</label>
+      <input id="inp-name" type="text" value="西苑高中捕手" style="
+        width:100%; background:#0a0c10; border:1px solid #1e2535;
+        color:#f0f4f8; font-size:14px; padding:10px 12px;
+        border-radius:8px; outline:none; font-family:'Noto Sans TC',sans-serif;
+      ">
+    </div>
+    <div>
+      <label style="font-size:11px; color:#8896a7; letter-spacing:1px; display:block; margin-bottom:6px;">訓練週期 (月)</label>
+      <input id="inp-months" type="number" value="3" min="1" max="12" style="
+        width:100%; background:#0a0c10; border:1px solid #1e2535;
+        color:#f0f4f8; font-size:16px; padding:10px 12px;
+        border-radius:8px; outline:none; font-family:'Noto Sans TC',sans-serif;
+      ">
+    </div>
+  </div>
+
+  <button onclick="applyData()" style="
+    width:100%; background:linear-gradient(135deg,#e8a020,#d4891a);
+    border:none; color:#000; font-family:'Noto Sans TC',sans-serif;
+    font-size:14px; font-weight:900; padding:12px;
+    border-radius:10px; cursor:pointer; letter-spacing:1px;
+  ">✅ 套用更新</button>
+
+  <div id="apply-msg" style="text-align:center; font-size:12px; color:#22c55e; margin-top:10px; display:none;">
+    ✓ 已更新！
+  </div>
+</div>
+
 <!-- STATS -->
 <div class="stats-row">
   <div class="stat-pill gold">
-    <div class="stat-val">170</div>
+    <div class="stat-val" id="disp-height">170</div>
     <div class="stat-label">身高 cm</div>
   </div>
   <div class="stat-pill blue">
-    <div class="stat-val">79</div>
+    <div class="stat-val" id="disp-weight">79</div>
     <div class="stat-label">體重 kg</div>
   </div>
   <div class="stat-pill green">
-    <div class="stat-val">27.3</div>
+    <div class="stat-val" id="disp-bmi">27.3</div>
     <div class="stat-label">BMI</div>
   </div>
   <div class="stat-pill red">
-    <div class="stat-val">126g</div>
+    <div class="stat-val" id="disp-protein">126g</div>
     <div class="stat-label">每日蛋白質目標</div>
   </div>
   <div class="stat-pill gold">
-    <div class="stat-val">3mo</div>
+    <div class="stat-val" id="disp-months">3mo</div>
     <div class="stat-label">訓練週期</div>
   </div>
 </div>
@@ -876,10 +944,10 @@
   </div>
 
   <div class="protein-target">
-    <div class="protein-num">126g</div>
+    <div class="protein-num" id="disp-protein2">126g</div>
     <div class="protein-info">
       <strong style="color:var(--text)">每日蛋白質目標</strong><br>
-      計算公式：體重 79kg × 1.6 = 126g/天<br>
+      <span id="disp-protein-formula">計算公式：體重 79kg × 1.6 = 126g/天</span><br>
       分配於3~4餐攝取，避免一次過量
     </div>
   </div>
@@ -1036,6 +1104,46 @@
       }
     }
   });
+
+  // ===== 編輯器功能 =====
+  function toggleEditor() {
+    const panel = document.getElementById('editorPanel');
+    const btn = document.getElementById('editBtn');
+    if (panel.style.display === 'none') {
+      panel.style.display = 'block';
+      btn.textContent = '✖ 關閉編輯';
+    } else {
+      panel.style.display = 'none';
+      btn.textContent = '✏️ 編輯選手資料';
+    }
+  }
+
+  function applyData() {
+    const h = parseFloat(document.getElementById('inp-height').value) || 170;
+    const w = parseFloat(document.getElementById('inp-weight').value) || 79;
+    const name = document.getElementById('inp-name').value || '西苑高中捕手';
+    const months = parseInt(document.getElementById('inp-months').value) || 3;
+
+    const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+    const protein = Math.round(w * 1.6);
+
+    document.getElementById('disp-height').textContent = h;
+    document.getElementById('disp-weight').textContent = w;
+    document.getElementById('disp-bmi').textContent = bmi;
+    document.getElementById('disp-protein').textContent = protein + 'g';
+    document.getElementById('disp-months').textContent = months + 'mo';
+    document.getElementById('disp-protein2').textContent = protein + 'g';
+    document.getElementById('disp-protein-formula').textContent =
+      '計算公式：體重 ' + w + 'kg × 1.6 = ' + protein + 'g/天';
+
+    document.querySelector('.hero-badge').textContent = '⚾ ' + name + ' · 捕手專項';
+    document.querySelector('.footer').innerHTML =
+      '⚾ ' + name + '訓練計畫 · 由 <span style="color:var(--accent)">Lyra × Claude</span> 生成 · 請配合教練指導調整';
+
+    const msg = document.getElementById('apply-msg');
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 2000);
+  }
 </script>
 </body>
 </html>
