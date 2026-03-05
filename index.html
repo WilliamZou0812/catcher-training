@@ -353,12 +353,18 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
   </div>
 
   <div class="chart-card">
-    <div class="journal-date" id="today-date"></div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">勾選今天完成的訓練項目：</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="journal-date" id="today-date"></div>
+      <div id="today-day-tag" style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700"></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;" id="journal-hint">根據今天的訓練計畫，勾選完成的項目：</div>
     <div class="checklist" id="checklist"></div>
     <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
     <div class="progress-label" id="progress-label">0 / 0 完成</div>
-    <button class="save-log-btn" onclick="saveLog()">💾 儲存今天的訓練紀錄</button>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="save-log-btn" style="flex:1" onclick="saveLog()">💾 儲存今天的訓練紀錄</button>
+      <button onclick="clearTodayLog()" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:700;padding:11px 16px;border-radius:10px;cursor:pointer;white-space:nowrap">🗑️ 清除今日</button>
+    </div>
   </div>
 
   <div class="log-history">
@@ -577,14 +583,51 @@ const EXERCISES = [
   { text: '牆壁傳球反射 100下', badge: '居家', cls: 'ex-home' },
   { text: '徒手傳球動作確認 50次', badge: '居家', cls: 'ex-home' },
 ];
+
+// 每週課表：依星期幾 (0=日,1=一...6=六) 對應應完成的 EXERCISES 索引
+const WEEKLY_PLAN = {
+  0: { label: '週日 · 休息日', color: '#a78bfa', items: [], note: '今天是休息日，讓身體充分恢復！' },
+  1: { label: '週一 · 臂力日', color: '#e8a020', items: [0,1,2,3,6], note: '學校練習 + 彈力帶肩袖訓練 + T座打擊' },
+  2: { label: '週二 · 打擊日', color: '#3b82f6', items: [6,8,9], note: '學校練習 + 牆壁傳球 + 視覺化訓練（閉眼想像擊球5分鐘）' },
+  3: { label: '週三 · 恢復日', color: '#a78bfa', items: [9], note: '學校練習 + 輕度伸展，今天以恢復為主' },
+  4: { label: '週四 · 爆發力日', color: '#22c55e', items: [4,5,6,7], note: '學校練習 + 跳箱/深蹲跳 + T座打擊' },
+  5: { label: '週五 · 臂力保養日', color: '#e8a020', items: [0,1,7], note: '學校練習 + 肩袖保養（輕阻力）+ 乾揮棒100下' },
+  6: { label: '週六 · 自主加練日', color: '#ef4444', items: [7,8,9], note: '自主加練：乾揮棒 + 牆壁傳球 + 鏡前傳球力學確認' },
+};
+
 let checked = new Set();
+let todayItems = [];
 
 function initJournal() {
   const today = new Date();
-  document.getElementById('today-date').textContent = '📅 ' + today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日';
+  const dow = today.getDay();
+  const plan = WEEKLY_PLAN[dow];
+  todayItems = plan.items.map(i => EXERCISES[i]);
+
+  document.getElementById('today-date').textContent =
+    '📅 ' + today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日';
+
+  // 顯示今天是什麼日
+  const dayTag = document.getElementById('today-day-tag');
+  dayTag.textContent = plan.label;
+  dayTag.style.background = plan.color + '22';
+  dayTag.style.border = '1px solid ' + plan.color + '55';
+  dayTag.style.color = plan.color;
+
+  document.getElementById('journal-hint').textContent = plan.note;
+
   const cl = document.getElementById('checklist');
   cl.innerHTML = '';
-  EXERCISES.forEach((ex, i) => {
+  checked = new Set();
+
+  if (todayItems.length === 0) {
+    cl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">🛌 今天是休息日，好好放鬆！</div>';
+    updateProgress();
+    loadLogsAndRender();
+    return;
+  }
+
+  todayItems.forEach((ex, i) => {
     const div = document.createElement('div');
     div.className = 'check-item'; div.id = 'check-' + i;
     div.onclick = () => toggleCheck(i, div);
@@ -602,23 +645,50 @@ function toggleCheck(i, div) {
 }
 
 function updateProgress() {
-  const total = EXERCISES.length, done = checked.size;
+  const total = todayItems.length, done = checked.size;
   const pct = total ? Math.round(done / total * 100) : 0;
   document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-label').textContent = done + ' / ' + total + ' 完成 (' + pct + '%)';
+  document.getElementById('progress-label').textContent = total === 0 ? '休息日' : done + ' / ' + total + ' 完成 (' + pct + '%)';
 }
 
 async function saveLog() {
   const today = getTodayStr();
-  const pct = Math.round(checked.size / EXERCISES.length * 100);
+  const total = todayItems.length;
+  const pct = total ? Math.round(checked.size / total * 100) : 100;
   try {
-    await setDoc(doc(db, 'catcher', 'log_' + today), { date: today, done: checked.size, total: EXERCISES.length, pct });
+    await setDoc(doc(db, 'catcher', 'log_' + today), { date: today, done: checked.size, total, pct });
     showSync('☁️ 訓練紀錄已同步雲端', '#22c55e');
   } catch(e) { showSync('⚠️ 同步失敗', '#ef4444'); }
   await loadLogsAndRender();
   alert('✅ 訓練紀錄已儲存！今日完成率：' + pct + '%');
 }
 window.saveLog = saveLog;
+
+async function clearTodayLog() {
+  if (!confirm('確定要清除今天的訓練紀錄嗎？')) return;
+  const today = getTodayStr();
+  try {
+    await deleteDoc(doc(db, 'catcher', 'log_' + today));
+    showSync('🗑️ 今日紀錄已清除', '#8896a7');
+  } catch(e) {}
+  // 重置勾選
+  checked = new Set();
+  document.querySelectorAll('.check-item').forEach(el => el.classList.remove('done'));
+  document.querySelectorAll('.check-box').forEach(el => el.textContent = '');
+  updateProgress();
+  await loadLogsAndRender();
+}
+window.clearTodayLog = clearTodayLog;
+
+async function deleteLog(date) {
+  if (!confirm('確定要刪除 ' + date + ' 的紀錄嗎？')) return;
+  try {
+    await deleteDoc(doc(db, 'catcher', 'log_' + date));
+    showSync('🗑️ 紀錄已刪除', '#8896a7');
+  } catch(e) {}
+  await loadLogsAndRender();
+}
+window.deleteLog = deleteLog;
 
 async function loadLogsAndRender() {
   try {
@@ -650,12 +720,13 @@ function renderStreak(logs) {
 }
 
 function renderLogHistory(logs) {
-  const keys = Object.keys(logs).sort().reverse().slice(0, 14);
+  const keys = Object.keys(logs).sort().reverse().slice(0, 20);
   const el = document.getElementById('log-history-list');
   if (!keys.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px">尚無紀錄，完成今天的訓練後儲存！</div>'; return; }
   el.innerHTML = keys.map(k => {
-    const l = logs[k]; const color = l.pct >= 80 ? 'var(--accent3)' : l.pct >= 50 ? 'var(--accent)' : 'var(--red)';
-    return '<div class="log-row"><span class="log-date">' + k + '</span><span class="log-rate" style="color:' + color + '">' + l.done + '/' + l.total + '項 (' + l.pct + '%)</span></div>';
+    const l = logs[k];
+    const color = l.pct >= 80 ? 'var(--accent3)' : l.pct >= 50 ? 'var(--accent)' : 'var(--red)';
+    return '<div class="log-row"><span class="log-date">' + k + '</span><span class="log-rate" style="color:' + color + '">' + l.done + '/' + l.total + '項 (' + l.pct + '%)</span><button onclick="deleteLog(\'' + k + '\')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;opacity:.5;padding:0 4px" title="刪除此筆紀錄">🗑️</button></div>';
   }).join('');
 }
 
