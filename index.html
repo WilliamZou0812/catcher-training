@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>捕手專項訓練計畫</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --card: #161b24;
+    --accent: #e8a020;
+    --accent2: #3b82f6;
+    --accent3: #22c55e;
+    --red: #ef4444;
+    --text: #f0f4f8;
+    --muted: #8896a7;
+    --border: #1e2535;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    padding: 60px 24px 40px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(232,160,32,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(232,160,32,0.15);
+    border: 1px solid rgba(232,160,32,0.4);
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 8vw, 80px);
+    letter-spacing: 4px;
+    line-height: 1;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+    padding: 0 24px;
+  }
+
+  .stat-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 22px;
+    text-align: center;
+    min-width: 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-pill::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .stat-pill.gold::after { background: var(--accent); }
+  .stat-pill.blue::after { background: var(--accent2); }
+  .stat-pill.green::after { background: var(--accent3); }
+  .stat-pill.red::after { background: var(--red); }
+
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+  .stat-pill.gold .stat-val { color: var(--accent); }
+  .stat-pill.blue .stat-val { color: var(--accent2); }
+  .stat-pill.green .stat-val { color: var(--accent3); }
+  .stat-pill.red .stat-val { color: var(--red); }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  /* CONTAINER */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    margin-top: 48px;
+  }
+
+  .section-title .icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .section-title h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+  }
+
+  .section-title .num {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  /* PRIORITY BAR CHART */
+  .priority-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .priority-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .priority-card:hover { transform: translateY(-2px); }
+
+  .priority-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    line-height: 1;
+    opacity: 0.08;
+    position: absolute;
+    right: 14px; top: 8px;
+  }
+
+  .priority-badge {
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .p1 .priority-badge { background: rgba(232,160,32,0.2); color: var(--accent); border: 1px solid rgba(232,160,32,0.3); }
+  .p2 .priority-badge { background: rgba(59,130,246,0.2); color: var(--accent2); border: 1px solid rgba(59,130,246,0.3); }
+  .p3 .priority-badge { background: rgba(34,197,94,0.2); color: var(--accent3); border: 1px solid rgba(34,197,94,0.3); }
+  .p4 .priority-badge { background: rgba(239,68,68,0.2); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+
+  .priority-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .priority-bar-wrap {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .priority-bar {
+    height: 100%;
+    border-radius: 3px;
+    animation: barGrow 1.2s ease forwards;
+    transform-origin: left;
+  }
+
+  @keyframes barGrow {
+    from { width: 0; }
+  }
+
+  .p1 .priority-bar { background: var(--accent); width: 95%; }
+  .p2 .priority-bar { background: var(--accent2); width: 80%; }
+  .p3 .priority-bar { background: var(--accent3); width: 65%; }
+  .p4 .priority-bar { background: var(--red); width: 50%; }
+
+  .priority-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* CHART CARD */
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .chart-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .chart-card p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 260px;
+  }
+
+  /* TRAINING TABLE */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+
+  @media(max-width: 700px) {
+    .week-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .day-card:hover {
+    border-color: rgba(232,160,32,0.4);
+    background: var(--surface);
+  }
+
+  .day-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .day-tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .tag-arm { background: rgba(232,160,32,0.2); color: var(--accent); }
+  .tag-bat { background: rgba(59,130,246,0.2); color: var(--accent2); }
+  .tag-body { background: rgba(34,197,94,0.2); color: var(--accent3); }
+  .tag-rest { background: rgba(139,92,246,0.2); color: #a78bfa; }
+  .tag-review { background: rgba(239,68,68,0.2); color: var(--red); }
+
+  .day-items {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.8;
+    text-align: left;
+  }
+
+  /* EXERCISE TABLE */
+  .ex-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .ex-table th {
+    background: rgba(232,160,32,0.1);
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .ex-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .ex-table tr:last-child td { border-bottom: none; }
+  .ex-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .ex-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .ex-arm { background: rgba(232,160,32,0.15); color: var(--accent); }
+  .ex-leg { background: rgba(34,197,94,0.15); color: var(--accent3); }
+  .ex-bat { background: rgba(59,130,246,0.15); color: var(--accent2); }
+  .ex-home { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  /* MILESTONE */
+  .milestone-wrap {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .milestone-wrap::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 20px; bottom: 20px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent3));
+    border-radius: 2px;
+  }
+
+  .milestone {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .milestone::before {
+    content: '';
+    position: absolute;
+    left: -24px; top: 16px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid;
+  }
+
+  .m1::before { border-color: var(--accent); background: rgba(232,160,32,0.3); }
+  .m2::before { border-color: var(--accent2); background: rgba(59,130,246,0.3); }
+  .m3::before { border-color: var(--accent3); background: rgba(34,197,94,0.3); }
+
+  .milestone-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+
+  .milestone-month {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .m1 .milestone-month { color: var(--accent); }
+  .m2 .milestone-month { color: var(--accent2); }
+  .m3 .milestone-month { color: var(--accent3); }
+
+  .milestone-items {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .milestone-items li {
+    list-style: none;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .milestone-items li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    opacity: 0.5;
+  }
+
+  /* DIET */
+  .diet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .diet-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .diet-icon { font-size: 24px; margin-bottom: 8px; }
+  .diet-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .diet-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  .protein-target {
+    background: linear-gradient(135deg, rgba(232,160,32,0.1), rgba(232,160,32,0.05));
+    border: 1px solid rgba(232,160,32,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .protein-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .protein-info { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* CHARTS 2-col */
+  .charts-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media(max-width: 640px) {
+    .charts-2col { grid-template-columns: 1fr; }
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 32px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    letter-spacing: 1px;
+  }
+
+  .footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">⚾ 西苑高中 · 捕手專項</div>
+  <h1>捕手訓練<br>改善計畫</h1>
+  <div class="hero-sub">3個月系統化訓練 · 阻殺臂力 × 打擊擊球點</div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-pill gold">
+    <div class="stat-val">170</div>
+    <div class="stat-label">身高 cm</div>
+  </div>
+  <div class="stat-pill blue">
+    <div class="stat-val">79</div>
+    <div class="stat-label">體重 kg</div>
+  </div>
+  <div class="stat-pill green">
+    <div class="stat-val">27.3</div>
+    <div class="stat-label">BMI</div>
+  </div>
+  <div class="stat-pill red">
+    <div class="stat-val">126g</div>
+    <div class="stat-label">每日蛋白質目標</div>
+  </div>
+  <div class="stat-pill gold">
+    <div class="stat-val">3mo</div>
+    <div class="stat-label">訓練週期</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- PRIORITY -->
+  <div class="section-title">
+    <div class="icon" style="background:rgba(232,160,32,0.15)">🎯</div>
+    <div>
+      <div class="num">SECTION 01</div>
+      <h2>改善優先順序</h2>
+    </div>
+  </div>
+
+  <div class="priority-grid">
+    <div class="priority-card p1">
+      <div class="priority-num">1</div>
+      <div class="priority-badge">最優先</div>
+      <div class="priority-title">阻殺傳球臂力</div>
+      <div class="priority-bar-wrap"><div class="priority-bar"></div></div>
+      <div class="priority-desc">傳球力學修正 + 肩袖強化 + 下肢爆發力，目標：0.8秒接球→出手</div>
+    </div>
+    <div class="priority-card p2">
+      <div class="priority-num">2</div>
+      <div class="priority-badge">重要</div>
+      <div class="priority-title">打擊擊球點掌握</div>
+      <div class="priority-bar-wrap"><div class="priority-bar"></div></div>
+      <div class="priority-desc">修正被動等球習慣，建立主動出棒決策信心，穩定長打潛力</div>
+    </div>
+    <div class="priority-card p3">
+      <div class="priority-num">3</div>
+      <div class="priority-badge">輔助</div>
+      <div class="priority-title">整體體能與爆發力</div>
+      <div class="priority-bar-wrap"><div class="priority-bar"></div></div>
+      <div class="priority-desc">跳箱、深蹲跳、核心訓練，強化全身動力鏈連動</div>
+    </div>
+    <div class="priority-card p4">
+      <div class="priority-num">4</div>
+      <div class="priority-badge">長期</div>
+      <div class="priority-title">體重與體態管理</div>
+      <div class="priority-bar-wrap"><div class="priority-bar"></div></div>
+      <div class="priority-desc">增肌微降體脂，目標體脂率降至20%以下，提升起身速度</div>
+    </div>
+  </div>
+
+  <!-- RADAR + DOUGHNUT CHARTS -->
+  <div class="section-title" style="margin-top:48px">
+    <div class="icon" style="background:rgba(59,130,246,0.15)">📊</div>
+    <div>
+      <div class="num">SECTION 02</div>
+      <h2>能力評估圖表</h2>
+    </div>
+  </div>
+
+  <div class="charts-2col">
+    <div class="chart-card">
+      <h3>現況能力雷達圖</h3>
+      <p>各項能力現況評估（滿分10）</p>
+      <div class="chart-wrap">
+        <canvas id="radarChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>訓練時間分配</h3>
+      <p>每週訓練重點比例建議</p>
+      <div class="chart-wrap">
+        <canvas id="doughnutChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCISE TABLE -->
+  <div class="section-title">
+    <div class="icon" style="background:rgba(232,160,32,0.15)">💪</div>
+    <div>
+      <div class="num">SECTION 03</div>
+      <h2>訓練動作清單</h2>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <table class="ex-table">
+      <thead>
+        <tr>
+          <th>訓練動作</th>
+          <th>類型</th>
+          <th>組數</th>
+          <th>次數</th>
+          <th>場地</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>彈力帶肩袖外旋</td>
+          <td><span class="ex-badge ex-arm">臂力</span></td>
+          <td>3組</td>
+          <td>15下</td>
+          <td>學校/家</td>
+        </tr>
+        <tr>
+          <td>彈力帶前平舉</td>
+          <td><span class="ex-badge ex-arm">臂力</span></td>
+          <td>3組</td>
+          <td>12下</td>
+          <td>學校/家</td>
+        </tr>
+        <tr>
+          <td>啞鈴側平舉</td>
+          <td><span class="ex-badge ex-arm">臂力</span></td>
+          <td>3組</td>
+          <td>12下</td>
+          <td>學校/家</td>
+        </tr>
+        <tr>
+          <td>俯身彈力帶划船</td>
+          <td><span class="ex-badge ex-arm">臂力</span></td>
+          <td>3組</td>
+          <td>15下</td>
+          <td>學校</td>
+        </tr>
+        <tr>
+          <td>跳箱訓練</td>
+          <td><span class="ex-badge ex-leg">爆發力</span></td>
+          <td>3組</td>
+          <td>8下</td>
+          <td>學校</td>
+        </tr>
+        <tr>
+          <td>深蹲跳</td>
+          <td><span class="ex-badge ex-leg">爆發力</span></td>
+          <td>3組</td>
+          <td>10下</td>
+          <td>學校/家</td>
+        </tr>
+        <tr>
+          <td>單腳跨步推蹬</td>
+          <td><span class="ex-badge ex-leg">爆發力</span></td>
+          <td>3組</td>
+          <td>各10下</td>
+          <td>學校/家</td>
+        </tr>
+        <tr>
+          <td>T座打擊</td>
+          <td><span class="ex-badge ex-bat">打擊</span></td>
+          <td>每天</td>
+          <td>50下</td>
+          <td>學校</td>
+        </tr>
+        <tr>
+          <td>乾揮棒練習</td>
+          <td><span class="ex-badge ex-bat">打擊</span></td>
+          <td>每天</td>
+          <td>100下</td>
+          <td>家</td>
+        </tr>
+        <tr>
+          <td>牆壁傳球反射</td>
+          <td><span class="ex-badge ex-home">居家</span></td>
+          <td>每天</td>
+          <td>100下</td>
+          <td>家</td>
+        </tr>
+        <tr>
+          <td>徒手傳球動作鏡前確認</td>
+          <td><span class="ex-badge ex-home">居家</span></td>
+          <td>每天</td>
+          <td>50次</td>
+          <td>家</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- WEEKLY SCHEDULE -->
+  <div class="section-title">
+    <div class="icon" style="background:rgba(34,197,94,0.15)">📅</div>
+    <div>
+      <div class="num">SECTION 04</div>
+      <h2>每週訓練時程</h2>
+    </div>
+  </div>
+
+  <div class="week-grid">
+    <div class="day-card">
+      <div class="day-name" style="color:var(--accent)">MON</div>
+      <div class="day-tag tag-arm">臂力</div>
+      <div class="day-items">
+        學校練習<br>
+        彈力帶肩袖<br>
+        T座50下
+      </div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:var(--accent2)">TUE</div>
+      <div class="day-tag tag-bat">打擊</div>
+      <div class="day-items">
+        學校練習<br>
+        牆壁傳球<br>
+        視覺化訓練
+      </div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:#a78bfa">WED</div>
+      <div class="day-tag tag-rest">恢復</div>
+      <div class="day-items">
+        學校練習<br>
+        輕度伸展<br>
+        休息恢復
+      </div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:var(--accent3)">THU</div>
+      <div class="day-tag tag-body">爆發力</div>
+      <div class="day-items">
+        學校練習<br>
+        跳箱/深蹲跳<br>
+        T座50下
+      </div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:var(--accent)">FRI</div>
+      <div class="day-tag tag-arm">臂力</div>
+      <div class="day-items">
+        學校練習<br>
+        肩袖保養<br>
+        乾揮100下
+      </div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:var(--red)">SAT</div>
+      <div class="day-tag tag-review">複習</div>
+      <div class="day-items">
+        自主加練<br>
+        鏡前力學確認<br>
+        打擊錄影分析
+      </div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:#a78bfa">SUN</div>
+      <div class="day-tag tag-rest">休息</div>
+      <div class="day-items">
+        完全休息<br>
+        或輕度活動<br>
+        睡眠充足
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS CHART -->
+  <div class="section-title">
+    <div class="icon" style="background:rgba(34,197,94,0.15)">📈</div>
+    <div>
+      <div class="num">SECTION 05</div>
+      <h2>3個月進步預測</h2>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h3>能力成長預測曲線</h3>
+    <p>臂力 × 打擊精準度 × 整體爆發力（預估成長指數）</p>
+    <div class="chart-wrap" style="height:280px">
+      <canvas id="progressChart"></canvas>
+    </div>
+  </div>
+
+  <!-- MILESTONES -->
+  <div class="section-title">
+    <div class="icon" style="background:rgba(232,160,32,0.15)">🏆</div>
+    <div>
+      <div class="num">SECTION 06</div>
+      <h2>各月進步指標</h2>
+    </div>
+  </div>
+
+  <div class="milestone-wrap">
+    <div class="milestone m1">
+      <div class="milestone-card">
+        <div class="milestone-month">第 1 個月 — 動作建立期</div>
+        <ul class="milestone-items">
+          <li>傳球力學動作穩定（鏡前確認手肘高度正確）</li>
+          <li>T座打擊擊球點穩定，不再打出弱滾地球</li>
+          <li>彈力帶訓練動作完整、不代償</li>
+          <li>每日自主練習習慣養成</li>
+        </ul>
+      </div>
+    </div>
+    <div class="milestone m2">
+      <div class="milestone-card">
+        <div class="milestone-month">第 2 個月 — 力量累積期</div>
+        <ul class="milestone-items">
+          <li>傳球彈道明顯變平、球速感覺加快</li>
+          <li>實際打席中主動出棒次數增加</li>
+          <li>起身傳球速度縮短至 1 秒以內</li>
+          <li>深蹲跳組數與高度提升</li>
+        </ul>
+      </div>
+    </div>
+    <div class="milestone m3">
+      <div class="milestone-card">
+        <div class="milestone-month">第 3 個月 — 實戰整合期</div>
+        <ul class="milestone-items">
+          <li>實際比賽阻殺率提升，教練正向回饋</li>
+          <li>安打率提升，長打出現頻率更穩定</li>
+          <li>目標接球→出手 0.8 秒</li>
+          <li>體重維持，體脂感官明顯改善</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIET -->
+  <div class="section-title">
+    <div class="icon" style="background:rgba(239,68,68,0.15)">🍱</div>
+    <div>
+      <div class="num">SECTION 07</div>
+      <h2>飲食與體態建議</h2>
+    </div>
+  </div>
+
+  <div class="diet-grid">
+    <div class="diet-card">
+      <div class="diet-icon">🥚</div>
+      <div class="diet-title">早餐重點</div>
+      <div class="diet-desc">確保蛋白質攝取：雞蛋、豆漿、雞胸肉，搭配適量碳水補充訓練能量</div>
+    </div>
+    <div class="diet-card">
+      <div class="diet-icon">⚡</div>
+      <div class="diet-title">訓練後30分鐘</div>
+      <div class="diet-desc">蛋白質 + 碳水黃金窗口，促進肌肉合成與恢復（非常關鍵）</div>
+    </div>
+    <div class="diet-card">
+      <div class="diet-icon">🚫</div>
+      <div class="diet-title">減少攝取</div>
+      <div class="diet-desc">精緻糖、含糖飲料、炸物。這類食物會增加體脂，影響爆發力</div>
+    </div>
+    <div class="diet-card">
+      <div class="diet-icon">💧</div>
+      <div class="diet-title">水分補充</div>
+      <div class="diet-desc">每日至少 2,500ml，訓練日增加至 3,000ml，維持肌肉功能</div>
+    </div>
+  </div>
+
+  <div class="protein-target">
+    <div class="protein-num">126g</div>
+    <div class="protein-info">
+      <strong style="color:var(--text)">每日蛋白質目標</strong><br>
+      計算公式：體重 79kg × 1.6 = 126g/天<br>
+      分配於3~4餐攝取，避免一次過量
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚾ 西苑高中捕手訓練計畫 · 由 <span>Lyra × Claude</span> 生成 · 請配合教練指導調整
+</div>
+
+<script>
+  // RADAR CHART
+  const radarCtx = document.getElementById('radarChart').getContext('2d');
+  new Chart(radarCtx, {
+    type: 'radar',
+    data: {
+      labels: ['臂力', '傳球速度', '打擊精準', '爆發力', '體能耐力', '守備反應'],
+      datasets: [{
+        label: '現況',
+        data: [4, 5, 4, 6, 6, 7],
+        backgroundColor: 'rgba(232,160,32,0.15)',
+        borderColor: 'rgba(232,160,32,0.8)',
+        pointBackgroundColor: 'var(--accent)',
+        pointBorderColor: '#fff',
+        pointRadius: 4,
+        borderWidth: 2
+      }, {
+        label: '3個月目標',
+        data: [7, 7.5, 7, 8, 7.5, 8],
+        backgroundColor: 'rgba(59,130,246,0.1)',
+        borderColor: 'rgba(59,130,246,0.6)',
+        pointBackgroundColor: 'var(--accent2)',
+        pointBorderColor: '#fff',
+        pointRadius: 4,
+        borderWidth: 2,
+        borderDash: [5, 3]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 }
+        }
+      },
+      scales: {
+        r: {
+          min: 0, max: 10,
+          ticks: { stepSize: 2, color: '#8896a7', font: { size: 10 }, backdropColor: 'transparent' },
+          grid: { color: 'rgba(255,255,255,0.06)' },
+          angleLines: { color: 'rgba(255,255,255,0.06)' },
+          pointLabels: { color: '#f0f4f8', font: { size: 12 } }
+        }
+      }
+    }
+  });
+
+  // DOUGHNUT CHART
+  const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+  new Chart(doughnutCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['阻殺臂力', '打擊訓練', '爆發力體能', '體態飲食'],
+      datasets: [{
+        data: [40, 30, 20, 10],
+        backgroundColor: [
+          'rgba(232,160,32,0.8)',
+          'rgba(59,130,246,0.8)',
+          'rgba(34,197,94,0.8)',
+          'rgba(239,68,68,0.8)'
+        ],
+        borderColor: '#161b24',
+        borderWidth: 3,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#8896a7',
+            font: { size: 11 },
+            boxWidth: 12,
+            padding: 12
+          }
+        }
+      }
+    }
+  });
+
+  // PROGRESS LINE CHART
+  const progressCtx = document.getElementById('progressChart').getContext('2d');
+  new Chart(progressCtx, {
+    type: 'line',
+    data: {
+      labels: ['開始', '第2週', '第4週', '第6週', '第8週', '第10週', '第12週'],
+      datasets: [{
+        label: '阻殺臂力',
+        data: [40, 48, 56, 63, 68, 73, 78],
+        borderColor: 'rgba(232,160,32,0.9)',
+        backgroundColor: 'rgba(232,160,32,0.08)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: 'var(--accent)',
+        pointRadius: 4
+      }, {
+        label: '打擊精準度',
+        data: [40, 44, 50, 58, 64, 69, 75],
+        borderColor: 'rgba(59,130,246,0.9)',
+        backgroundColor: 'rgba(59,130,246,0.06)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: 'var(--accent2)',
+        pointRadius: 4
+      }, {
+        label: '整體爆發力',
+        data: [50, 54, 58, 63, 67, 71, 76],
+        borderColor: 'rgba(34,197,94,0.9)',
+        backgroundColor: 'rgba(34,197,94,0.06)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: 'var(--accent3)',
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: {
+          labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#8896a7', font: { size: 11 } },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        },
+        y: {
+          min: 30, max: 85,
+          ticks: {
+            color: '#8896a7',
+            font: { size: 11 },
+            callback: v => v + '%'
+          },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>
