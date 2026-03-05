@@ -323,15 +323,130 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <div class="icon" style="background:rgba(239,68,68,.15)">🍱</div>
     <div><div class="num">SECTION 07</div><h2>飲食與體態建議</h2></div>
   </div>
-  <div class="diet-grid">
-    <div class="diet-card"><div class="diet-icon">🥚</div><div class="diet-title">早餐重點</div><div class="diet-desc">確保蛋白質攝取：雞蛋、豆漿、雞胸肉，搭配適量碳水</div></div>
-    <div class="diet-card"><div class="diet-icon">⚡</div><div class="diet-title">訓練後30分鐘</div><div class="diet-desc">蛋白質 + 碳水黃金窗口，促進肌肉合成與恢復</div></div>
-    <div class="diet-card"><div class="diet-icon">🚫</div><div class="diet-title">減少攝取</div><div class="diet-desc">精緻糖、含糖飲料、炸物，影響體脂與爆發力</div></div>
-    <div class="diet-card"><div class="diet-icon">💧</div><div class="diet-title">水分補充</div><div class="diet-desc">每日至少 2,500ml，訓練日增加至 3,000ml</div></div>
-  </div>
-  <div class="protein-target">
+
+  <!-- 蛋白質目標 -->
+  <div class="protein-target" style="margin-bottom:16px">
     <div class="protein-num" id="disp-protein2">126g</div>
-    <div class="protein-info"><strong style="color:var(--text)">每日蛋白質目標</strong><br><span id="disp-protein-formula">計算公式：體重 79kg × 1.6 = 126g/天</span><br>分配於3~4餐攝取，避免一次過量</div>
+    <div class="protein-info"><strong style="color:var(--text)">每日蛋白質目標</strong><br><span id="disp-protein-formula">計算公式：體重 79kg × 1.6 = 126g/天</span><br>分配於3~4餐，每餐不超過40g</div>
+  </div>
+
+  <!-- 優質蛋白 -->
+  <div class="chart-card" style="margin-bottom:14px">
+    <h3 style="margin-bottom:12px">🥩 優質蛋白質來源</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <div style="font-size:10px;letter-spacing:1px;color:var(--accent);font-weight:700;margin-bottom:8px">動物性（吸收率高）</div>
+        <div style="font-size:12px;color:var(--muted);line-height:2">
+          🍗 雞胸肉 — 100g含31g蛋白質<br>
+          🥚 雞蛋 — 每顆6g，早餐必備<br>
+          🐟 鮪魚罐頭 — 便宜方便高蛋白<br>
+          🐖 豬里肌 — 低脂優質肉類<br>
+          🥛 低脂牛奶/希臘優格 — 睡前補充
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:1px;color:var(--accent2);font-weight:700;margin-bottom:8px">植物性（輔助補充）</div>
+        <div style="font-size:12px;color:var(--muted);line-height:2">
+          🫘 板豆腐 — 100g含8g蛋白質<br>
+          🌱 毛豆/黑豆 — 高蛋白豆類<br>
+          🥛 豆漿 — 每日早餐已在喝 ✓<br>
+          🌾 藜麥 — 完整胺基酸來源<br>
+          &nbsp;
+        </div>
+      </div>
+    </div>
+    <div style="background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.2);border-radius:10px;padding:12px;margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8">
+      💡 <strong style="color:var(--text)">每日分配範例：</strong>
+      早餐豆漿+2蛋(22g) → 午餐雞胸(30g) → 晚餐魚/豬里肌+豆腐(45g) → 睡前牛奶(8g) = 約105g，其餘由日常食物補足
+    </div>
+  </div>
+
+  <!-- 絕對避免 / 偶爾可以 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+    <div class="chart-card" style="border-color:rgba(239,68,68,.3)">
+      <h3 style="color:var(--red);margin-bottom:12px">🚫 最不應該吃</h3>
+      <div style="font-size:12px;line-height:2;color:var(--muted)">
+        <div style="color:var(--red);font-weight:700">🥤 含糖飲料（第一名）</div>
+        一杯全糖珍奶≈60g糖，直接轉脂肪，是體脂最大敵人
+        <div style="color:var(--red);font-weight:700;margin-top:8px">🍟 油炸食物</div>
+        反式脂肪影響恢復，增加慢性發炎
+        <div style="color:var(--red);font-weight:700;margin-top:8px">🍜 泡麵/加工食品</div>
+        高鈉導致水腫，影響心肺與體重
+        <div style="color:var(--red);font-weight:700;margin-top:8px">🍞 精緻澱粉空腹吃</div>
+        血糖快升快降，訓練容易疲勞
+      </div>
+    </div>
+    <div class="chart-card" style="border-color:rgba(34,197,94,.3)">
+      <h3 style="color:var(--accent3);margin-bottom:12px">🎉 偶爾可以放縱</h3>
+      <div style="font-size:12px;line-height:2;color:var(--muted)">
+        <div style="color:var(--accent3);font-weight:700">🍗 雞排（每週1~2次）</div>
+        蛋白質不錯，訓練後吃最佳
+        <div style="color:var(--accent3);font-weight:700;margin-top:8px">🍚 滷肉飯</div>
+        量控制，肥肉稍微挑掉
+        <div style="color:var(--accent3);font-weight:700;margin-top:8px">🍲 火鍋</div>
+        湯少喝，料盡量吃
+        <div style="color:var(--accent3);font-weight:700;margin-top:8px">🍰 甜食</div>
+        訓練後30分鐘內吃，最不易胖
+      </div>
+    </div>
+  </div>
+
+  <!-- 捕手肌群重點 -->
+  <div class="chart-card" style="margin-bottom:14px">
+    <h3 style="margin-bottom:14px">💪 捕手標準體型 — 肌群訓練優先順序</h3>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="background:rgba(232,160,32,.08);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:12px 14px">
+        <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:4px">🥇 第一優先：下肢（大腿 + 臀部）</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7">一場比賽蹲站超過100次，下盤是捕手的基礎。深蹲、跳箱、跨步推蹬都為此設計。<br>目標：大腿圍比同齡明顯粗壯。</div>
+      </div>
+      <div style="background:rgba(59,130,246,.08);border-left:3px solid var(--accent2);border-radius:0 10px 10px 0;padding:12px 14px">
+        <div style="font-size:12px;font-weight:700;color:var(--accent2);margin-bottom:4px">🥈 第二優先：核心（腹部 + 腰背）</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7">傳球力量的70%來自核心轉體，不是手臂！核心弱只靠手臂丟球，臂力永遠不夠且易傷。<br>建議加入：平板支撐 60秒×3組、俄羅斯轉體 20下×3組。</div>
+      </div>
+      <div style="background:rgba(34,197,94,.08);border-left:3px solid var(--accent3);border-radius:0 10px 10px 0;padding:12px 14px">
+        <div style="font-size:12px;font-weight:700;color:var(--accent3);margin-bottom:4px">🥉 第三優先：肩袖（旋轉肌群）</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7">不是練大，是練「耐用」。每局傳球肩袖承受極大壓力，弱了會慢性磨損。<br>彈力帶保養 > 啞鈴重訓，質勝於量。</div>
+      </div>
+      <div style="background:rgba(239,68,68,.08);border-left:3px solid var(--red);border-radius:0 10px 10px 0;padding:12px 14px">
+        <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px">⚠️ 不需要特別練：胸肌 + 二頭肌</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7">過度發達的胸肌會限制肩膀活動度，對傳球有害。很多男生最愛練這兩個，但捕手反而應該少練。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 體重管理 -->
+  <div class="chart-card">
+    <h3 style="margin-bottom:14px">⚖️ 體重管理策略</h3>
+    <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:700;color:var(--accent2);margin-bottom:6px">📌 目前狀況：79kg / 170cm / BMI 27.3</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8">不需要減重，需要「體態重組」：<strong style="color:var(--text)">維持體重 + 增肌 + 降體脂</strong><br>
+      3個月目標：體重 77~79kg（不一定降），體脂從25%→20%以下</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;color:var(--muted)">
+      <div style="background:var(--surface);border-radius:10px;padding:12px">
+        <div style="font-weight:700;color:var(--accent3);margin-bottom:6px">✅ 訓練日飲食</div>
+        正常吃、蛋白質達標<br>
+        訓練後30分鐘補充蛋白質+碳水<br>
+        水分至少 3,000ml
+      </div>
+      <div style="background:var(--surface);border-radius:10px;padding:12px">
+        <div style="font-weight:700;color:var(--accent2);margin-bottom:6px">💤 休息日飲食</div>
+        減少一餐的澱粉量<br>
+        蛋白質不減，維持肌肉<br>
+        水分至少 2,500ml
+      </div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:rgba(232,160,32,.06);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.8">
+      📏 <strong style="color:var(--text)">正確的體重測量方式：</strong><br>
+      每週固定一天（建議週一）早上起床、上完廁所後測量。不要每天測——每天數字波動可達1~2kg，容易誤判趨勢。連續8週的折線圖才是真正的趨勢。
+    </div>
+  </div>
+
+  <div class="diet-grid" style="margin-top:14px">
+    <div class="diet-card"><div class="diet-icon">⚡</div><div class="diet-title">訓練後黃金30分鐘</div><div class="diet-desc">蛋白質＋碳水同時補充，促進肌肉合成。此時吃甜食也最不易胖</div></div>
+    <div class="diet-card"><div class="diet-icon">💧</div><div class="diet-title">水分補充</div><div class="diet-desc">訓練日 3,000ml，休息日 2,500ml。脫水1%就會影響爆發力表現</div></div>
+    <div class="diet-card"><div class="diet-icon">😴</div><div class="diet-title">睡眠也是訓練</div><div class="diet-desc">生長激素在深度睡眠時分泌，每天7~9小時睡眠才能讓訓練效果發揮</div></div>
+    <div class="diet-card"><div class="diet-icon">🚫</div><div class="diet-title">最快見效的一件事</div><div class="diet-desc">從今天起不喝含糖飲料，等於每天少攝取300~500大卡，這是最有效的體態管理</div></div>
   </div>
 </div>
 </div><!-- end tab-plan -->
