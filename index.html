@@ -210,6 +210,28 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .acc-detail strong{color:var(--text);font-size:12px;}
 .acc-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
 .acc-weight{display:inline-block;background:rgba(232,160,32,.15);border:1px solid rgba(232,160,32,.3);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+
+/* NOTES */
+.note-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;}
+.note-card h3{font-size:14px;font-weight:700;margin-bottom:4px;}
+.note-card p{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.note-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.note-tab{font-size:12px;font-weight:700;padding:8px 16px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;}
+.note-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.note-textarea{width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:13px;padding:12px 14px;border-radius:10px;outline:none;font-family:'Noto Sans TC',sans-serif;line-height:1.8;resize:vertical;min-height:100px;}
+.note-textarea:focus{border-color:rgba(232,160,32,.5);}
+.note-textarea::placeholder{color:var(--muted);}
+.note-save-btn{margin-top:10px;background:rgba(232,160,32,.15);border:1px solid rgba(232,160,32,.4);color:var(--accent);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:700;padding:9px 20px;border-radius:20px;cursor:pointer;transition:all .2s;}
+.note-save-btn:hover{background:rgba(232,160,32,.25);}
+.note-history{margin-top:14px;display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;}
+.note-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.note-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.note-item-date{font-size:10px;color:var(--muted);letter-spacing:1px;}
+.note-item-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;opacity:.4;transition:opacity .2s;}
+.note-item-del:hover{opacity:1;}
+.note-item-text{font-size:13px;line-height:1.7;white-space:pre-wrap;}
+.note-coach .note-item-text{color:#fbbf24;}
+.note-player .note-item-text{color:var(--text);}
 </style>
 </head>
 <body>
@@ -220,6 +242,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
   <div class="nav-tab" onclick="switchTab('journal')">📝 訓練日誌</div>
   <div class="nav-tab" onclick="switchTab('weight')">⚖️ 體重追蹤</div>
   <div class="nav-tab" onclick="switchTab('timer')">⏱️ 計時器</div>
+  <div class="nav-tab" onclick="switchTab('notes')">📣 備註心得</div>
 </div>
 
 <!-- ===== TAB: 訓練計畫 ===== -->
@@ -290,14 +313,45 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <div class="icon" style="background:rgba(34,197,94,.15)">📅</div>
     <div><div class="num">SECTION 04</div><h2>每週訓練時程</h2></div>
   </div>
+  <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:12px 16px;margin-bottom:12px;font-size:12px;color:var(--muted);line-height:1.8">
+    🏠 <strong style="color:var(--text)">住校說明：</strong>週一~週五住校，宿舍練習以「無器材」為主。週六上午球隊練球，下午才是自主加練黃金時段。週日全天休假，21:00收假。
+  </div>
   <div class="week-grid">
-    <div class="day-card"><div class="day-name" style="color:var(--accent)">MON</div><div class="day-tag tag-arm">臂力</div><div class="day-items">學校練習<br>彈力帶肩袖<br>T座50下</div></div>
-    <div class="day-card"><div class="day-name" style="color:var(--accent2)">TUE</div><div class="day-tag tag-bat">打擊</div><div class="day-items">學校練習<br>牆壁傳球<br>視覺化訓練</div></div>
-    <div class="day-card"><div class="day-name" style="color:#a78bfa">WED</div><div class="day-tag tag-rest">恢復</div><div class="day-items">學校練習<br>輕度伸展<br>休息恢復</div></div>
-    <div class="day-card"><div class="day-name" style="color:var(--accent3)">THU</div><div class="day-tag tag-body">爆發力</div><div class="day-items">學校練習<br>跳箱/深蹲跳<br>T座50下</div></div>
-    <div class="day-card"><div class="day-name" style="color:var(--accent)">FRI</div><div class="day-tag tag-arm">臂力</div><div class="day-items">學校練習<br>肩袖保養<br>乾揮100下</div></div>
-    <div class="day-card"><div class="day-name" style="color:var(--red)">SAT</div><div class="day-tag tag-review">複習</div><div class="day-items">自主加練<br>鏡前力學確認<br>打擊錄影</div></div>
-    <div class="day-card"><div class="day-name" style="color:#a78bfa">SUN</div><div class="day-tag tag-rest">休息</div><div class="day-items">完全休息<br>或輕度活動<br>睡眠充足</div></div>
+    <div class="day-card">
+      <div class="day-name" style="color:var(--accent)">MON</div>
+      <div class="day-tag tag-arm">宿舍</div>
+      <div class="day-items">學校練習<br>乾揮棒100下<br>牆壁傳球<br>徒手傳球確認</div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:var(--accent2)">TUE</div>
+      <div class="day-tag tag-bat">宿舍</div>
+      <div class="day-items">學校練習<br>乾揮棒100下<br>視覺化訓練<br>徒手傳球確認</div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:#a78bfa">WED</div>
+      <div class="day-tag tag-rest">恢復</div>
+      <div class="day-items">學校練習<br>輕度拉伸<br>徒手傳球確認<br>好好休息</div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:var(--accent3)">THU</div>
+      <div class="day-tag tag-body">宿舍</div>
+      <div class="day-items">學校練習<br>深蹲跳3組<br>乾揮棒100下<br>牆壁傳球</div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:var(--accent)">FRI</div>
+      <div class="day-tag tag-rest">養精</div>
+      <div class="day-items">學校練習<br>乾揮棒50下<br>徒手傳球確認<br>早點休息</div>
+    </div>
+    <div class="day-card" style="border-color:rgba(239,68,68,.3)">
+      <div class="day-name" style="color:var(--red)">SAT</div>
+      <div class="day-tag tag-review">加練⚡</div>
+      <div class="day-items">上午：球隊練球<br>下午：彈力帶肩袖<br>跳箱訓練<br>T座打擊50下</div>
+    </div>
+    <div class="day-card">
+      <div class="day-name" style="color:#a78bfa">SUN</div>
+      <div class="day-tag tag-rest">休假</div>
+      <div class="day-items">上午可輕度練習<br>下午充分休息<br>乾揮棒100下<br>21:00收假</div>
+    </div>
   </div>
 
   <div class="section-title">
@@ -562,6 +616,36 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 </div>
 </div>
 
+<!-- ===== TAB: 備註心得 ===== -->
+<div id="tab-notes" class="tab-page">
+<div class="container" style="padding-top:24px">
+
+  <div class="section-title" style="margin-top:0">
+    <div class="icon" style="background:rgba(232,160,32,.15)">📣</div>
+    <div><div class="num">NOTES & JOURNAL</div><h2>備註與心得</h2></div>
+  </div>
+
+  <!-- 教練備註 -->
+  <div class="note-card">
+    <h3>👨‍💼 教練備註</h3>
+    <p>爸爸可以在這裡留給兒子本週的重點提醒、教練回饋或鼓勵的話</p>
+    <textarea class="note-textarea" id="coach-input" placeholder="例：教練說本週阻殺傳球進步了！繼續保持手肘高度，下週重點練T座外角擊球點。加油！⚾"></textarea>
+    <button class="note-save-btn" onclick="saveNote('coach')">📣 發布教練備註</button>
+    <div class="note-history" id="coach-history"></div>
+  </div>
+
+  <!-- 訓練心得 -->
+  <div class="note-card">
+    <h3>✍️ 本週訓練心得</h3>
+    <p>記錄這週的感受、進步、或遇到的困難，留給自己和爸爸看</p>
+    <textarea class="note-textarea" id="player-input" placeholder="例：這週T座打擊感覺外角掌握得比較好了，但阻殺還是覺得出手太慢..."></textarea>
+    <button class="note-save-btn" style="background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);color:var(--accent2)" onclick="saveNote('player')">✍️ 儲存我的心得</button>
+    <div class="note-history" id="player-history"></div>
+  </div>
+
+</div>
+</div>
+
 <div class="footer" id="footer-el">⚾ 西苑高中捕手訓練計畫 · 由 <span>Lyra × Claude</span> 生成 · 請配合教練指導調整</div>
 
 <script type="module">
@@ -595,6 +679,7 @@ function switchTab(id) {
   document.getElementById('tab-' + id).classList.add('active');
   event.target.classList.add('active');
   if (id === 'weight') renderWeightChart();
+  if (id === 'notes') loadNotes();
 }
 window.switchTab = switchTab;
 
@@ -683,6 +768,7 @@ window.addEventListener('load', async () => {
   await renderWeightList();
   initTimer();
   initAccordion();
+  loadNotes();
 });
 
 // ===== JOURNAL =====
@@ -699,15 +785,25 @@ const EXERCISES = [
   { text: '徒手傳球動作確認 50次', badge: '居家', cls: 'ex-home' },
 ];
 
-// 每週課表：依星期幾 (0=日,1=一...6=六) 對應應完成的 EXERCISES 索引
+// 每週課表（依實際住校情況設計）
+// 週一~五住校：只做宿舍可執行項目（無器材、空間小）
+// 週六上午球隊練球，下午自主加練
+// 週日全天休假，21:00收假
 const WEEKLY_PLAN = {
-  0: { label: '週日 · 休息日', color: '#a78bfa', items: [], note: '今天是休息日，讓身體充分恢復！' },
-  1: { label: '週一 · 臂力日', color: '#e8a020', items: [0,1,2,3,6], note: '學校練習 + 彈力帶肩袖訓練 + T座打擊' },
-  2: { label: '週二 · 打擊日', color: '#3b82f6', items: [6,8,9], note: '學校練習 + 牆壁傳球 + 視覺化訓練（閉眼想像擊球5分鐘）' },
-  3: { label: '週三 · 恢復日', color: '#a78bfa', items: [9], note: '學校練習 + 輕度伸展，今天以恢復為主' },
-  4: { label: '週四 · 爆發力日', color: '#22c55e', items: [4,5,6,7], note: '學校練習 + 跳箱/深蹲跳 + T座打擊' },
-  5: { label: '週五 · 臂力保養日', color: '#e8a020', items: [0,1,7], note: '學校練習 + 肩袖保養（輕阻力）+ 乾揮棒100下' },
-  6: { label: '週六 · 自主加練日', color: '#ef4444', items: [7,8,9], note: '自主加練：乾揮棒 + 牆壁傳球 + 鏡前傳球力學確認' },
+  0: { label: '週日 · 休假日', color: '#a78bfa', items: [7,9],
+       note: '📦 收假前完成：乾揮棒100下 + 徒手傳球確認，21:00準時收假，早點休息' },
+  1: { label: '週一 · 住校｜宿舍練習', color: '#e8a020', items: [7,8,9],
+       note: '🏠 宿舍可做：乾揮棒100下 + 牆壁傳球（或對牆模擬）+ 徒手傳球力學確認（鏡前）' },
+  2: { label: '週二 · 住校｜宿舍練習', color: '#3b82f6', items: [7,9],
+       note: '🏠 宿舍可做：乾揮棒100下 + 視覺化訓練（閉眼模擬擊球決策5分鐘）+ 徒手傳球確認' },
+  3: { label: '週三 · 住校｜恢復日', color: '#a78bfa', items: [9],
+       note: '🌙 今天以恢復為主：輕度拉伸10分鐘 + 徒手傳球動作確認即可，好好休息' },
+  4: { label: '週四 · 住校｜宿舍練習', color: '#22c55e', items: [5,7,8],
+       note: '🏠 宿舍可做：深蹲跳3組×10下（樓梯間或戶外）+ 乾揮棒100下 + 牆壁傳球' },
+  5: { label: '週五 · 住校｜週末前準備', color: '#e8a020', items: [7,9],
+       note: '🏠 輕度收尾：乾揮棒50下（輕鬆節奏）+ 徒手傳球確認，為週六練球養精蓄銳' },
+  6: { label: '週六 · 球隊練球＋自主加練', color: '#ef4444', items: [0,1,2,3,4,6,7,8],
+       note: '⚾ 上午球隊練球全力投入！下午自主加練：彈力帶肩袖系列 + T座打擊 + 跳箱訓練' },
 };
 
 let checked = new Set();
@@ -994,6 +1090,69 @@ function timerReset() {
   document.getElementById('timer-start-btn').className = 'timer-btn start';
 }
 window.timerReset = timerReset;
+
+// ===== NOTES =====
+async function saveNote(type) {
+  const inputId = type === 'coach' ? 'coach-input' : 'player-input';
+  const text = document.getElementById(inputId).value.trim();
+  if (!text) { alert('請先輸入內容'); return; }
+  const now = new Date();
+  const dateStr = now.getFullYear() + '-' +
+    String(now.getMonth()+1).padStart(2,'0') + '-' +
+    String(now.getDate()).padStart(2,'0') + ' ' +
+    String(now.getHours()).padStart(2,'0') + ':' +
+    String(now.getMinutes()).padStart(2,'0');
+  const id = type + '_' + Date.now();
+  try {
+    await setDoc(doc(db, 'catcher', id), { type, text, date: dateStr, id });
+    showSync('☁️ ' + (type === 'coach' ? '教練備註' : '訓練心得') + '已同步雲端', '#22c55e');
+  } catch(e) { showSync('⚠️ 同步失敗', '#ef4444'); }
+  document.getElementById(inputId).value = '';
+  await loadNotes();
+}
+window.saveNote = saveNote;
+
+async function deleteNote(id) {
+  if (!confirm('確定要刪除這則紀錄嗎？')) return;
+  try { await deleteDoc(doc(db, 'catcher', id)); showSync('🗑️ 已刪除', '#8896a7'); } catch(e) {}
+  await loadNotes();
+}
+window.deleteNote = deleteNote;
+
+async function loadNotes() {
+  try {
+    const snap = await getDocs(collection(db, 'catcher'));
+    const coaches = [], players = [];
+    snap.forEach(d => {
+      const data = d.data();
+      if (data.type === 'coach') coaches.push(data);
+      else if (data.type === 'player') players.push(data);
+    });
+    coaches.sort((a,b) => b.date.localeCompare(a.date));
+    players.sort((a,b) => b.date.localeCompare(a.date));
+    renderNotes('coach-history', coaches, 'note-coach');
+    renderNotes('player-history', players, 'note-player');
+  } catch(e) {}
+}
+
+function renderNotes(containerId, notes, cls) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!notes.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:12px;padding:16px">尚無紀錄</div>';
+    return;
+  }
+  el.innerHTML = notes.slice(0, 10).map(n => `
+    <div class="note-item ${cls}">
+      <div class="note-item-header">
+        <span class="note-item-date">📅 ${n.date}</span>
+        <button class="note-item-del" onclick="deleteNote('${n.id}')">🗑️</button>
+      </div>
+      <div class="note-item-text">${n.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>
+  `).join('');
+}
+
 
 // ===== ACCORDION 訓練動作詳細說明 =====
 const EX_DETAIL = [
