@@ -191,6 +191,25 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 /* FOOTER */
 .footer{text-align:center;padding:28px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);letter-spacing:1px;}
 .footer span{color:var(--accent);}
+
+/* ACCORDION */
+.acc-item{border-bottom:1px solid var(--border);}
+.acc-item:last-child{border-bottom:none;}
+.acc-header{display:flex;align-items:center;gap:12px;padding:14px 20px;cursor:pointer;transition:background .2s;user-select:none;}
+.acc-header:hover{background:rgba(255,255,255,.02);}
+.acc-header.open{background:rgba(232,160,32,.04);}
+.acc-arrow{font-size:12px;color:var(--muted);margin-left:auto;transition:transform .3s;flex-shrink:0;}
+.acc-header.open .acc-arrow{transform:rotate(180deg);}
+.acc-name{font-size:13px;font-weight:700;flex:1;}
+.acc-meta{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.acc-meta span{font-size:11px;color:var(--muted);}
+.acc-body{display:none;padding:0 20px 16px 20px;animation:fadeIn .2s ease;}
+.acc-body.open{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.acc-detail{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-size:12px;line-height:1.9;color:var(--muted);}
+.acc-detail strong{color:var(--text);font-size:12px;}
+.acc-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.acc-weight{display:inline-block;background:rgba(232,160,32,.15);border:1px solid rgba(232,160,32,.3);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
 </style>
 </head>
 <body>
@@ -260,23 +279,11 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <div class="icon" style="background:rgba(232,160,32,.15)">💪</div>
     <div><div class="num">SECTION 03</div><h2>訓練動作清單</h2></div>
   </div>
-  <div class="chart-card">
-    <table class="ex-table">
-      <thead><tr><th>訓練動作</th><th>類型</th><th>組數</th><th>次數</th><th>場地</th></tr></thead>
-      <tbody>
-        <tr><td>彈力帶肩袖外旋</td><td><span class="ex-badge ex-arm">臂力</span></td><td>3組</td><td>15下</td><td>學校/家</td></tr>
-        <tr><td>彈力帶前平舉</td><td><span class="ex-badge ex-arm">臂力</span></td><td>3組</td><td>12下</td><td>學校/家</td></tr>
-        <tr><td>啞鈴側平舉</td><td><span class="ex-badge ex-arm">臂力</span></td><td>3組</td><td>12下</td><td>學校/家</td></tr>
-        <tr><td>俯身彈力帶划船</td><td><span class="ex-badge ex-arm">臂力</span></td><td>3組</td><td>15下</td><td>學校</td></tr>
-        <tr><td>跳箱訓練</td><td><span class="ex-badge ex-leg">爆發力</span></td><td>3組</td><td>8下</td><td>學校</td></tr>
-        <tr><td>深蹲跳</td><td><span class="ex-badge ex-leg">爆發力</span></td><td>3組</td><td>10下</td><td>學校/家</td></tr>
-        <tr><td>單腳跨步推蹬</td><td><span class="ex-badge ex-leg">爆發力</span></td><td>3組</td><td>各10下</td><td>學校/家</td></tr>
-        <tr><td>T座打擊</td><td><span class="ex-badge ex-bat">打擊</span></td><td>每天</td><td>50下</td><td>學校</td></tr>
-        <tr><td>乾揮棒練習</td><td><span class="ex-badge ex-bat">打擊</span></td><td>每天</td><td>100下</td><td>家</td></tr>
-        <tr><td>牆壁傳球反射</td><td><span class="ex-badge ex-home">居家</span></td><td>每天</td><td>100下</td><td>家</td></tr>
-        <tr><td>徒手傳球動作確認</td><td><span class="ex-badge ex-home">居家</span></td><td>每天</td><td>50次</td><td>家</td></tr>
-      </tbody>
-    </table>
+  <div class="chart-card" style="padding:0;overflow:hidden">
+    <div style="padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:12px;color:var(--muted)">點選任一動作可展開詳細說明 👇</span>
+    </div>
+    <div id="ex-accordion"></div>
   </div>
 
   <div class="section-title">
@@ -554,6 +561,7 @@ window.addEventListener('load', async () => {
   initJournal();
   await renderWeightList();
   initTimer();
+  initAccordion();
 });
 
 // ===== JOURNAL =====
@@ -800,6 +808,143 @@ function timerReset() {
   document.getElementById('timer-start-btn').className = 'timer-btn start';
 }
 window.timerReset = timerReset;
+
+// ===== ACCORDION 訓練動作詳細說明 =====
+const EX_DETAIL = [
+  {
+    name: '彈力帶肩袖外旋', badge: 'ex-arm', badgeText: '臂力', sets: '3組', reps: '15下', place: '學校/家',
+    weight: '彈力帶輕阻力（入門款）',
+    purpose: '強化旋轉肌群，是捕手傳球最核心的穩定肌群',
+    how: '站姿，手肘彎90°夾緊身側，向外旋轉手臂至極限，慢慢回來。速度：2秒出、2秒回',
+    key: '手肘不能離開身體，動作範圍寧小勿大，感受肩後側發力',
+    warn: '⚠️ 不可用力甩動，這是保護肩膀的動作，慢且精準才有效'
+  },
+  {
+    name: '彈力帶前平舉', badge: 'ex-arm', badgeText: '臂力', sets: '3組', reps: '12下', place: '學校/家',
+    weight: '彈力帶輕阻力',
+    purpose: '強化三角肌前束，補足傳球手臂上舉的力量',
+    how: '站姿踩住彈力帶，雙手握帶，手臂伸直往前舉至肩膀高度，慢慢放下',
+    key: '舉起時吐氣，放下時吸氣，核心收緊避免腰部代償',
+    warn: '⚠️ 不要聳肩，肩膀保持下壓狀態'
+  },
+  {
+    name: '啞鈴側平舉', badge: 'ex-arm', badgeText: '臂力', sets: '3組', reps: '12下', place: '學校/家',
+    weight: '🏋️ 建議重量：3~5 kg（新手以控制感為主）',
+    purpose: '強化三角肌中束，讓傳球時手臂側舉更有力量',
+    how: '站姿微彎腰，手肘微彎，雙手啞鈴從身側舉至肩膀高度，停1秒再慢慢放下',
+    key: '舉起時手肘高於手腕（小指略高），避免直臂，感受肩膀外側發力',
+    warn: '⚠️ 太重會借力甩動，一旦動作變形立刻減重。3kg覺得輕才換5kg'
+  },
+  {
+    name: '俯身彈力帶划船', badge: 'ex-arm', badgeText: '臂力', sets: '3組', reps: '15下', place: '學校',
+    weight: '彈力帶中阻力 或 啞鈴 8~10 kg',
+    purpose: '強化背部菱形肌與後三角，是傳球動力鏈的關鍵後鏈肌群',
+    how: '俯身45度，背打平，手肘向後拉至腰側，擠壓肩胛骨，停1秒再放',
+    key: '背部保持平直，不要圓背。想像「把手肘插進後口袋」的感覺',
+    warn: '⚠️ 圓背容易受傷，寧可減重也要保持脊椎中立'
+  },
+  {
+    name: '跳箱訓練', badge: 'ex-leg', badgeText: '爆發力', sets: '3組', reps: '8下', place: '學校',
+    weight: '自身體重，箱子高度建議 40~50 cm 起',
+    purpose: '訓練下肢瞬間爆發力，模擬捕手起身傳球的快速起跳動作',
+    how: '半蹲預備，雙腳同時用力跳上箱子，站穩後走下（不要跳下），再重複',
+    key: '落地時膝蓋對齊腳尖，不要內夾。落地要輕，代表控制力好',
+    warn: '⚠️ 膝蓋不適立刻停止。下來時走下不跳下，保護膝關節'
+  },
+  {
+    name: '深蹲跳', badge: 'ex-leg', badgeText: '爆發力', sets: '3組', reps: '10下', place: '學校/家',
+    weight: '自身體重即可，不需負重',
+    purpose: '強化大腿與臀部爆發力，提升捕手起身蹲站的速度',
+    how: '深蹲至大腿平行地面，然後爆發跳起，落地時立刻蹲回再跳，連續進行',
+    key: '落地後馬上再跳，訓練的是「觸地反射」，不是蹲很深再慢慢起來',
+    warn: '⚠️ 膝蓋始終對齊腳尖，不要內扣。若膝蓋痛停止並告知教練'
+  },
+  {
+    name: '單腳跨步推蹬', badge: 'ex-leg', badgeText: '爆發力', sets: '3組', reps: '各10下', place: '學校/家',
+    weight: '自身體重，熟練後可手持 2~3 kg 啞鈴',
+    purpose: '強化單腳推蹬力量，模擬捕手傳球時右腳蹬地的動作',
+    how: '一腳向前跨一大步成弓箭步，後腳用力推蹬回到站姿，兩腳交替進行',
+    key: '前腳膝蓋不超過腳尖，重心在前腳跟，感受臀部與大腿後側用力',
+    warn: '⚠️ 跨步太小會變成純蹲，要跨大步才能練到推蹬角度'
+  },
+  {
+    name: 'T座打擊', badge: 'ex-bat', badgeText: '打擊', sets: '每天', reps: '50下', place: '學校',
+    weight: '使用比賽用球棒',
+    purpose: '固定擊球點訓練，讓身體記憶正確的揮棒路徑與接觸點位置',
+    how: '分三個區域各打：內角（T座靠近身體）、中間、外角（T座遠離身體），各約15~17下',
+    key: '每次打完後停住，用鏡子或影片確認揮棒路徑是否水平，擊球點是否在最佳位置',
+    warn: '⚠️ 不要為了打遠而用力甩，T座訓練重點是「準確」不是「距離」'
+  },
+  {
+    name: '乾揮棒練習', badge: 'ex-bat', badgeText: '打擊', sets: '每天', reps: '100下', place: '家',
+    weight: '可用比賽棒或重訓棒（比賽棒重10~15%）',
+    purpose: '強化手腕爆發力與揮棒肌肉記憶，建立主動出棒的肌肉模式',
+    how: '分組進行：25下正常速度（確認動作）→ 25下爆發揮棒 → 休息 → 重複',
+    key: '每10下在腦海中想像一顆球的位置，練習對特定球路出棒的決策',
+    warn: '⚠️ 室內練習注意周邊空間，確保揮棒範圍內無人無物'
+  },
+  {
+    name: '牆壁傳球反射', badge: 'ex-home', badgeText: '居家', sets: '每天', reps: '100下', place: '家',
+    weight: '使用軟式橡皮球或網球',
+    purpose: '練習捕手換手速度與接球後的傳球出手節奏',
+    how: '距離牆壁約2~3公尺，用接球手套接，換手後快速丟向牆壁再接，計時100下',
+    key: '目標換手時間越來越短，可以錄影計時，每週比較是否有進步',
+    warn: '⚠️ 確保牆壁夠硬且周邊無易碎物，或改用室外牆壁練習'
+  },
+  {
+    name: '徒手傳球動作確認', badge: 'ex-home', badgeText: '居家', sets: '每天', reps: '50次', place: '家',
+    weight: '無需器材',
+    purpose: '在鏡子前用慢動作修正傳球力學，建立正確的手肘位置記憶',
+    how: '站在鏡子前，用1/4速度模擬傳球動作，確認：手肘高於肩、手腕快速甩出、重心前移',
+    key: '特別確認「手肘高度」，這是臂力不足最常見的根本原因',
+    warn: '⚠️ 慢動作確認比快速練習更重要，寧可少做但每次都確認正確'
+  }
+]
+
+function initAccordion() {
+  const wrap = document.getElementById('ex-accordion')
+  if (!wrap) return
+  wrap.innerHTML = EX_DETAIL.map((ex, i) => `
+    <div class="acc-item">
+      <div class="acc-header" id="acc-h-${i}" onclick="toggleAcc(${i})">
+        <span class="ex-badge ${ex.badge}" style="flex-shrink:0">${ex.badgeText}</span>
+        <span class="acc-name">${ex.name}</span>
+        <div class="acc-meta">
+          <span>${ex.sets}</span>
+          <span>·</span>
+          <span>${ex.reps}</span>
+        </div>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body" id="acc-b-${i}">
+        <div class="acc-detail">
+          <div class="acc-tags">
+            <span class="acc-weight">⚖️ ${ex.weight}</span>
+            <span style="font-size:11px;color:var(--muted);padding:3px 10px;background:var(--card);border:1px solid var(--border);border-radius:20px">📍 ${ex.place}</span>
+          </div>
+          <div style="margin-bottom:6px"><strong>🎯 目的：</strong>${ex.purpose}</div>
+          <div style="margin-bottom:6px"><strong>📋 動作說明：</strong>${ex.how}</div>
+          <div style="margin-bottom:6px"><strong>💡 重點提示：</strong>${ex.key}</div>
+          <div style="color:#fbbf24">${ex.warn}</div>
+        </div>
+      </div>
+    </div>
+  `).join('')
+}
+window.initAccordion = initAccordion
+
+function toggleAcc(i) {
+  const header = document.getElementById('acc-h-' + i)
+  const body = document.getElementById('acc-b-' + i)
+  const isOpen = body.classList.contains('open')
+  // 關閉所有
+  document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('open'))
+  document.querySelectorAll('.acc-header').forEach(h => h.classList.remove('open'))
+  // 如果原本是關閉的就打開
+  if (!isOpen) { body.classList.add('open'); header.classList.add('open') }
+}
+window.toggleAcc = toggleAcc
+
 </script>
 </body>
 </html>
