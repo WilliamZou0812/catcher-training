@@ -218,7 +218,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
   <h3>⚙️ 選手資料設定</h3>
   <div class="inp-grid">
     <div class="inp-wrap"><label>身高 (cm)</label><input id="inp-height" type="number" value="170"></div>
-    <div class="inp-wrap"><label>體重 (kg)</label><input id="inp-weight" type="number" value="82"></div>
+    <div class="inp-wrap"><label>體重 (kg)</label><input id="inp-weight" type="number" value="79"></div>
     <div class="inp-wrap"><label>姓名</label><input id="inp-name" type="text" value="西苑高中捕手"></div>
     <div class="inp-wrap"><label>訓練週期 (月)</label><input id="inp-months" type="number" value="3" min="1" max="12"></div>
   </div>
@@ -436,7 +436,30 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 
 <div class="footer" id="footer-el">⚾ 西苑高中捕手訓練計畫 · 由 <span>Lyra × Claude</span> 生成 · 請配合教練指導調整</div>
 
-<script>
+<script type="module">
+// ===== FIREBASE 初始化 =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDc9RRevmcntFxBe4702Q6gxZbiyKYQmY4",
+  authDomain: "catcher-training.firebaseapp.com",
+  projectId: "catcher-training",
+  storageBucket: "catcher-training.firebasestorage.app",
+  messagingSenderId: "948431697698",
+  appId: "1:948431697698:web:5bf76bfc30d4bfa08d577b"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 顯示同步狀態
+function showSync(msg, color) {
+  let el = document.getElementById('sync-status');
+  if (!el) { el = document.createElement('div'); el.id = 'sync-status'; el.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#161b24;border:1px solid #1e2535;color:#8896a7;font-size:11px;padding:8px 14px;border-radius:20px;z-index:999;transition:opacity .5s;'; document.body.appendChild(el); }
+  el.textContent = msg; el.style.color = color || '#8896a7'; el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 2500);
+}
+
 // ===== TAB SWITCH =====
 function switchTab(id) {
   document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
@@ -445,6 +468,7 @@ function switchTab(id) {
   event.target.classList.add('active');
   if (id === 'weight') renderWeightChart();
 }
+window.switchTab = switchTab;
 
 // ===== EDITOR =====
 function toggleEditor() {
@@ -453,11 +477,9 @@ function toggleEditor() {
   p.style.display = p.style.display === 'none' ? 'block' : 'none';
   b.textContent = p.style.display === 'none' ? '✏️ 編輯選手資料' : '✖ 關閉編輯';
 }
-function applyData() {
-  const h = parseFloat(document.getElementById('inp-height').value) || 170;
-  const w = parseFloat(document.getElementById('inp-weight').value) || 79;
-  const name = document.getElementById('inp-name').value || '西苑高中捕手';
-  const months = parseInt(document.getElementById('inp-months').value) || 3;
+window.toggleEditor = toggleEditor;
+
+function renderProfile(h, w, name, months) {
   const bmi = (w / ((h / 100) ** 2)).toFixed(1);
   const protein = Math.round(w * 1.6);
   document.getElementById('disp-height').textContent = h;
@@ -469,13 +491,30 @@ function applyData() {
   document.getElementById('disp-protein-formula').textContent = '計算公式：體重 ' + w + 'kg × 1.6 = ' + protein + 'g/天';
   document.getElementById('hero-badge').textContent = '⚾ ' + name + ' · 捕手專項';
   document.getElementById('footer-el').innerHTML = '⚾ ' + name + '訓練計畫 · 由 <span style="color:var(--accent)">Lyra × Claude</span> 生成 · 請配合教練指導調整';
+  document.getElementById('inp-height').value = h;
+  document.getElementById('inp-weight').value = w;
+  document.getElementById('inp-name').value = name;
+  document.getElementById('inp-months').value = months;
+}
+
+async function applyData() {
+  const h = parseFloat(document.getElementById('inp-height').value) || 170;
+  const w = parseFloat(document.getElementById('inp-weight').value) || 79;
+  const name = document.getElementById('inp-name').value || '西苑高中捕手';
+  const months = parseInt(document.getElementById('inp-months').value) || 3;
+  try {
+    await setDoc(doc(db, 'catcher', 'profile'), { h, w, name, months });
+    showSync('☁️ 選手資料已同步雲端', '#22c55e');
+  } catch(e) { showSync('⚠️ 同步失敗，請檢查網路', '#ef4444'); }
+  renderProfile(h, w, name, months);
   const msg = document.getElementById('apply-msg');
   msg.style.display = 'block';
   setTimeout(() => msg.style.display = 'none', 2000);
 }
+window.applyData = applyData;
 
 // ===== CHARTS =====
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   new Chart(document.getElementById('radarChart').getContext('2d'), {
     type: 'radar',
     data: {
@@ -504,8 +543,16 @@ window.addEventListener('load', () => {
     },
     options: { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 } } }, scales: { x: { ticks: { color: '#8896a7', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.04)' } }, y: { min: 30, max: 85, ticks: { color: '#8896a7', font: { size: 11 }, callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,.04)' } } } }
   });
+
+  // 載入 Firebase 資料
+  showSync('🔄 載入雲端資料中...', '#8896a7');
+  try {
+    const profileSnap = await getDoc(doc(db, 'catcher', 'profile'));
+    if (profileSnap.exists()) { const p = profileSnap.data(); renderProfile(p.h, p.w, p.name, p.months); }
+  } catch(e) { showSync('⚠️ 無法連線雲端', '#ef4444'); }
+
   initJournal();
-  renderWeightList();
+  await renderWeightList();
   initTimer();
 });
 
@@ -522,7 +569,6 @@ const EXERCISES = [
   { text: '牆壁傳球反射 100下', badge: '居家', cls: 'ex-home' },
   { text: '徒手傳球動作確認 50次', badge: '居家', cls: 'ex-home' },
 ];
-
 let checked = new Set();
 
 function initJournal() {
@@ -532,15 +578,13 @@ function initJournal() {
   cl.innerHTML = '';
   EXERCISES.forEach((ex, i) => {
     const div = document.createElement('div');
-    div.className = 'check-item';
-    div.id = 'check-' + i;
+    div.className = 'check-item'; div.id = 'check-' + i;
     div.onclick = () => toggleCheck(i, div);
     div.innerHTML = '<div class="check-box" id="cb-' + i + '"></div><span class="check-text">' + ex.text + '</span><span class="ex-badge ' + ex.cls + ' check-badge-sm">' + ex.badge + '</span>';
     cl.appendChild(div);
   });
   updateProgress();
-  renderStreak();
-  renderLogHistory();
+  loadLogsAndRender();
 }
 
 function toggleCheck(i, div) {
@@ -556,19 +600,26 @@ function updateProgress() {
   document.getElementById('progress-label').textContent = done + ' / ' + total + ' 完成 (' + pct + '%)';
 }
 
-function saveLog() {
+async function saveLog() {
   const today = getTodayStr();
-  const logs = getLogs();
   const pct = Math.round(checked.size / EXERCISES.length * 100);
-  logs[today] = { done: checked.size, total: EXERCISES.length, pct };
-  localStorage.setItem('catcher_logs', JSON.stringify(logs));
-  renderStreak();
-  renderLogHistory();
+  try {
+    await setDoc(doc(db, 'catcher', 'log_' + today), { date: today, done: checked.size, total: EXERCISES.length, pct });
+    showSync('☁️ 訓練紀錄已同步雲端', '#22c55e');
+  } catch(e) { showSync('⚠️ 同步失敗', '#ef4444'); }
+  await loadLogsAndRender();
   alert('✅ 訓練紀錄已儲存！今日完成率：' + pct + '%');
 }
+window.saveLog = saveLog;
 
-function getLogs() {
-  try { return JSON.parse(localStorage.getItem('catcher_logs') || '{}'); } catch { return {}; }
+async function loadLogsAndRender() {
+  try {
+    const snap = await getDocs(collection(db, 'catcher'));
+    const logs = {};
+    snap.forEach(d => { if (d.id.startsWith('log_')) { const l = d.data(); logs[l.date] = l; } });
+    renderStreak(logs);
+    renderLogHistory(logs);
+  } catch(e) { renderStreak({}); renderLogHistory({}); }
 }
 
 function getTodayStr() {
@@ -576,13 +627,11 @@ function getTodayStr() {
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 
-function renderStreak() {
-  const logs = getLogs();
+function renderStreak(logs) {
   let streak = 0, d = new Date();
   for (let i = 0; i < 365; i++) {
     const s = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    if (logs[s]) { streak++; d.setDate(d.getDate() - 1); }
-    else break;
+    if (logs[s]) { streak++; d.setDate(d.getDate() - 1); } else break;
   }
   document.getElementById('streak-num').textContent = streak;
   const msgs = [[0,'💪','開始記錄吧！'],[1,'🌱','很好的開始！'],[3,'🔥','連續三天！'],[7,'⭐','一週不間斷！'],[14,'🚀','兩週超強！'],[30,'👑','一個月王者！']];
@@ -592,8 +641,7 @@ function renderStreak() {
   document.getElementById('streak-msg').textContent = msg;
 }
 
-function renderLogHistory() {
-  const logs = getLogs();
+function renderLogHistory(logs) {
   const keys = Object.keys(logs).sort().reverse().slice(0, 14);
   const el = document.getElementById('log-history-list');
   if (!keys.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px">尚無紀錄，完成今天的訓練後儲存！</div>'; return; }
@@ -606,26 +654,33 @@ function renderLogHistory() {
 // ===== WEIGHT =====
 let weightChartInst = null;
 
-function getWeights() {
-  try { return JSON.parse(localStorage.getItem('catcher_weights') || '[]'); } catch { return []; }
-}
-
-function addWeight() {
+async function addWeight() {
   const val = parseFloat(document.getElementById('weight-input').value);
   if (!val || val < 30 || val > 200) { alert('請輸入合理的體重（30~200 kg）'); return; }
-  const weights = getWeights();
   const today = getTodayStr();
-  const idx = weights.findIndex(w => w.date === today);
-  if (idx >= 0) weights[idx].kg = val; else weights.push({ date: today, kg: val });
-  weights.sort((a, b) => a.date.localeCompare(b.date));
-  localStorage.setItem('catcher_weights', JSON.stringify(weights));
+  try {
+    await setDoc(doc(db, 'catcher', 'weight_' + today), { date: today, kg: val });
+    showSync('☁️ 體重已同步雲端', '#22c55e');
+  } catch(e) { showSync('⚠️ 同步失敗', '#ef4444'); }
   document.getElementById('weight-input').value = '';
-  renderWeightList();
+  await renderWeightList();
   renderWeightChart();
 }
+window.addWeight = addWeight;
 
-function renderWeightList() {
-  const weights = getWeights().slice().reverse();
+async function getWeightsFromDB() {
+  try {
+    const snap = await getDocs(collection(db, 'catcher'));
+    const weights = [];
+    snap.forEach(d => { if (d.id.startsWith('weight_')) weights.push(d.data()); });
+    return weights.sort((a, b) => a.date.localeCompare(b.date));
+  } catch(e) { return []; }
+}
+
+let cachedWeights = [];
+async function renderWeightList() {
+  cachedWeights = await getWeightsFromDB();
+  const weights = cachedWeights.slice().reverse();
   const el = document.getElementById('weight-list');
   if (!weights.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">尚無體重紀錄</div>'; return; }
   el.innerHTML = weights.map((w, i) => {
@@ -633,25 +688,28 @@ function renderWeightList() {
     const diffStr = diff !== null ? (diff > 0 ? '<span style="color:var(--red)">▲' + diff + '</span>' : diff < 0 ? '<span style="color:var(--accent3)">▼' + Math.abs(diff) + '</span>' : '<span style="color:var(--muted)">—</span>') : '';
     return '<div class="weight-row"><span style="color:var(--muted)">' + w.date + '</span><span style="font-weight:700">' + w.kg + ' kg</span><span>' + diffStr + '</span><button class="weight-del" onclick="deleteWeight(\'' + w.date + '\')">✕</button></div>';
   }).join('');
-}
-
-function deleteWeight(date) {
-  const weights = getWeights().filter(w => w.date !== date);
-  localStorage.setItem('catcher_weights', JSON.stringify(weights));
-  renderWeightList();
   renderWeightChart();
 }
 
-function clearWeights() {
-  if (confirm('確定要清除所有體重紀錄嗎？')) {
-    localStorage.removeItem('catcher_weights');
-    renderWeightList();
-    renderWeightChart();
-  }
+async function deleteWeight(date) {
+  try { await deleteDoc(doc(db, 'catcher', 'weight_' + date)); showSync('☁️ 已刪除', '#8896a7'); } catch(e) {}
+  await renderWeightList();
 }
+window.deleteWeight = deleteWeight;
+
+async function clearWeights() {
+  if (!confirm('確定要清除所有體重紀錄嗎？')) return;
+  const snap = await getDocs(collection(db, 'catcher'));
+  const dels = [];
+  snap.forEach(d => { if (d.id.startsWith('weight_')) dels.push(deleteDoc(doc(db, 'catcher', d.id))); });
+  await Promise.all(dels);
+  showSync('☁️ 已清除所有體重紀錄', '#8896a7');
+  await renderWeightList();
+}
+window.clearWeights = clearWeights;
 
 function renderWeightChart() {
-  const weights = getWeights();
+  const weights = cachedWeights;
   const ctx = document.getElementById('weightChart').getContext('2d');
   if (weightChartInst) { weightChartInst.destroy(); weightChartInst = null; }
   if (!weights.length) return;
@@ -659,36 +717,19 @@ function renderWeightChart() {
     type: 'line',
     data: {
       labels: weights.map(w => w.date.slice(5)),
-      datasets: [{
-        label: '體重 (kg)', data: weights.map(w => w.kg),
-        borderColor: 'rgba(59,130,246,.9)', backgroundColor: 'rgba(59,130,246,.08)',
-        tension: 0.3, fill: true, pointBackgroundColor: '#3b82f6', pointRadius: 5, pointHoverRadius: 7
-      }]
+      datasets: [{ label: '體重 (kg)', data: weights.map(w => w.kg), borderColor: 'rgba(59,130,246,.9)', backgroundColor: 'rgba(59,130,246,.08)', tension: 0.3, fill: true, pointBackgroundColor: '#3b82f6', pointRadius: 5, pointHoverRadius: 7 }]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 } } },
-      scales: {
-        x: { ticks: { color: '#8896a7', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,.04)' } },
-        y: { ticks: { color: '#8896a7', font: { size: 11 }, callback: v => v + 'kg' }, grid: { color: 'rgba(255,255,255,.04)' } }
-      }
-    }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 } } }, scales: { x: { ticks: { color: '#8896a7', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,.04)' } }, y: { ticks: { color: '#8896a7', font: { size: 11 }, callback: v => v + 'kg' }, grid: { color: 'rgba(255,255,255,.04)' } } } }
   });
 }
 
 // ===== TIMER =====
-let timerInterval = null;
-let timerRunning = false;
-let timerPhase = 'work'; // 'work' or 'rest'
-let timerSec = 0;
-let timerCurrentSet = 0;
-let timerTotalSets = 3;
-let selectedExercise = null;
+let timerInterval = null, timerRunning = false, timerPhase = 'work', timerSec = 0, timerCurrentSet = 0, timerTotalSets = 3, selectedExercise = null;
 
 function initTimer() {
   const wrap = document.getElementById('timer-exercises');
   wrap.innerHTML = '';
-  EXERCISES.forEach((ex, i) => {
+  EXERCISES.forEach((ex) => {
     const btn = document.createElement('button');
     btn.className = 'timer-ex-btn';
     btn.textContent = ex.text.split(' ')[0];
@@ -706,17 +747,14 @@ function initTimer() {
 function timerStart() {
   if (!selectedExercise) { alert('請先選擇一個訓練動作！'); return; }
   if (timerRunning) {
-    clearInterval(timerInterval);
-    timerRunning = false;
+    clearInterval(timerInterval); timerRunning = false;
     document.getElementById('timer-start-btn').textContent = '▶ 繼續';
     document.getElementById('timer-start-btn').className = 'timer-btn start';
     return;
   }
   if (timerCurrentSet === 0) {
     timerTotalSets = parseInt(document.getElementById('ts-sets').value) || 3;
-    timerPhase = 'work';
-    timerSec = parseInt(document.getElementById('ts-work').value) || 30;
-    timerCurrentSet = 1;
+    timerPhase = 'work'; timerSec = parseInt(document.getElementById('ts-work').value) || 30; timerCurrentSet = 1;
   }
   timerRunning = true;
   document.getElementById('timer-start-btn').textContent = '⏸ 暫停';
@@ -727,49 +765,31 @@ function timerStart() {
     if (timerSec <= 0) {
       if (timerPhase === 'work') {
         if (timerCurrentSet >= timerTotalSets) {
-          clearInterval(timerInterval);
-          timerRunning = false;
+          clearInterval(timerInterval); timerRunning = false;
           document.getElementById('timer-num').textContent = '完成';
-          document.getElementById('timer-phase').textContent = '全部完成！';
+          document.getElementById('timer-phase').textContent = '全部完成！🎉';
           document.getElementById('timer-start-btn').textContent = '▶ 開始';
           document.getElementById('timer-start-btn').className = 'timer-btn start';
-          timerCurrentSet = 0;
-          return;
+          timerCurrentSet = 0; return;
         }
-        timerPhase = 'rest';
-        timerSec = parseInt(document.getElementById('ts-rest').value) || 60;
-      } else {
-        timerPhase = 'work';
-        timerCurrentSet++;
-        timerSec = parseInt(document.getElementById('ts-work').value) || 30;
-      }
+        timerPhase = 'rest'; timerSec = parseInt(document.getElementById('ts-rest').value) || 60;
+      } else { timerPhase = 'work'; timerCurrentSet++; timerSec = parseInt(document.getElementById('ts-work').value) || 30; }
     }
     updateTimerDisplay();
   }, 1000);
 }
+window.timerStart = timerStart;
 
 function updateTimerDisplay() {
-  const el = document.getElementById('timer-num');
-  const phase = document.getElementById('timer-phase');
-  const info = document.getElementById('timer-set-info');
+  const el = document.getElementById('timer-num'), phase = document.getElementById('timer-phase'), info = document.getElementById('timer-set-info');
   el.textContent = String(timerSec).padStart(2, '0');
-  if (timerPhase === 'work') {
-    el.style.color = 'var(--accent3)';
-    phase.textContent = '訓練中';
-    phase.className = 'timer-phase work';
-  } else {
-    el.style.color = 'var(--accent2)';
-    phase.textContent = '休息中';
-    phase.className = 'timer-phase rest';
-  }
+  if (timerPhase === 'work') { el.style.color = 'var(--accent3)'; phase.textContent = '訓練中'; phase.className = 'timer-phase work'; }
+  else { el.style.color = 'var(--accent2)'; phase.textContent = '休息中'; phase.className = 'timer-phase rest'; }
   info.textContent = '第 ' + timerCurrentSet + ' / ' + timerTotalSets + ' 組';
 }
 
 function timerReset() {
-  clearInterval(timerInterval);
-  timerRunning = false;
-  timerCurrentSet = 0;
-  timerPhase = 'work';
+  clearInterval(timerInterval); timerRunning = false; timerCurrentSet = 0; timerPhase = 'work';
   timerSec = parseInt(document.getElementById('ts-work').value) || 30;
   document.getElementById('timer-num').textContent = String(timerSec).padStart(2,'0');
   document.getElementById('timer-num').style.color = 'var(--accent3)';
@@ -779,6 +799,7 @@ function timerReset() {
   document.getElementById('timer-start-btn').textContent = '▶ 開始';
   document.getElementById('timer-start-btn').className = 'timer-btn start';
 }
+window.timerReset = timerReset;
 </script>
 </body>
 </html>
