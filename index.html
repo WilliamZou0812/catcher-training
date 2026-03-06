@@ -293,9 +293,30 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <div class="icon" style="background:rgba(59,130,246,.15)">📊</div>
     <div><div class="num">SECTION 02</div><h2>能力評估圖表</h2></div>
   </div>
+  <!-- 可編輯雷達圖 -->
+  <div class="chart-card" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <h3>⚡ 能力自評雷達圖</h3>
+      <div style="display:flex;gap:8px">
+        <button onclick="radarSave()" style="background:rgba(232,160,32,.15);border:1px solid rgba(232,160,32,.4);color:var(--accent);font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;cursor:pointer">☁️ 儲存</button>
+        <button onclick="radarReset()" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:'Noto Sans TC',sans-serif;font-size:11px;padding:5px 14px;border-radius:20px;cursor:pointer">↺ 重置</button>
+      </div>
+    </div>
+    <p style="margin-bottom:14px">拖動滑桿調整數值，雷達圖即時更新（1~10分）</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div class="chart-wrap" style="height:260px"><canvas id="radarChart"></canvas></div>
+      <div id="radar-sliders" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:12px;font-size:11px;color:var(--muted);flex-wrap:wrap">
+      <span><span style="display:inline-block;width:12px;height:3px;background:rgba(232,160,32,.8);border-radius:2px;vertical-align:middle;margin-right:4px"></span>現況自評</span>
+      <span><span style="display:inline-block;width:12px;height:3px;background:rgba(59,130,246,.6);border-radius:2px;vertical-align:middle;margin-right:4px"></span>目標設定</span>
+      <span style="margin-left:auto;color:var(--accent);font-size:10px" id="radar-saved-time"></span>
+    </div>
+  </div>
+
   <div class="charts-2col">
-    <div class="chart-card"><h3>現況能力雷達圖</h3><p>各項能力現況評估（滿分10）</p><div class="chart-wrap"><canvas id="radarChart"></canvas></div></div>
     <div class="chart-card"><h3>訓練時間分配</h3><p>每週訓練重點比例建議</p><div class="chart-wrap"><canvas id="doughnutChart"></canvas></div></div>
+    <div class="chart-card"><h3>3個月進步預測</h3><p>臂力 × 打擊精準度 × 整體爆發力（預估成長指數）</p><div class="chart-wrap"><canvas id="progressChart"></canvas></div></div>
   </div>
 
   <div class="section-title">
@@ -354,14 +375,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     </div>
   </div>
 
-  <div class="section-title">
-    <div class="icon" style="background:rgba(34,197,94,.15)">📈</div>
-    <div><div class="num">SECTION 05</div><h2>3個月進步預測</h2></div>
-  </div>
-  <div class="chart-card">
-    <h3>能力成長預測曲線</h3><p>臂力 × 打擊精準度 × 整體爆發力（預估成長指數）</p>
-    <div class="chart-wrap" style="height:260px"><canvas id="progressChart"></canvas></div>
-  </div>
+
 
   <div class="section-title">
     <div class="icon" style="background:rgba(232,160,32,.15)">🏆</div>
@@ -727,18 +741,99 @@ async function applyData() {
 window.applyData = applyData;
 
 // ===== CHARTS =====
-window.addEventListener('load', async () => {
-  new Chart(document.getElementById('radarChart').getContext('2d'), {
+const RADAR_LABELS = ['臂力', '傳球速度', '打擊精準', '爆發力', '體能耐力', '守備反應'];
+const RADAR_DEFAULTS = { current: [4,5,4,6,6,7], target: [7,8,7,8,8,8] };
+let radarData = { current: [...RADAR_DEFAULTS.current], target: [...RADAR_DEFAULTS.target] };
+let radarChartInst = null;
+
+function buildRadarSliders() {
+  const wrap = document.getElementById('radar-sliders');
+  if (!wrap) return;
+  wrap.innerHTML = RADAR_LABELS.map((label, i) => `
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:11px;font-weight:700;color:var(--text)">${label}</span>
+        <div style="display:flex;gap:10px;font-size:11px">
+          <span style="color:rgba(232,160,32,.9)">現況 <strong id="rv-c-${i}">${radarData.current[i]}</strong></span>
+          <span style="color:rgba(59,130,246,.8)">目標 <strong id="rv-t-${i}">${radarData.target[i]}</strong></span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <input type="range" min="1" max="10" step="1" value="${radarData.current[i]}"
+          style="width:100%;accent-color:#e8a020;height:4px"
+          oninput="updateRadar('current',${i},this.value)">
+        <input type="range" min="1" max="10" step="1" value="${radarData.target[i]}"
+          style="width:100%;accent-color:#3b82f6;height:4px"
+          oninput="updateRadar('target',${i},this.value)">
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateRadar(type, idx, val) {
+  radarData[type][idx] = parseInt(val);
+  document.getElementById('rv-' + (type==='current'?'c':'t') + '-' + idx).textContent = val;
+  if (radarChartInst) {
+    radarChartInst.data.datasets[type==='current'?0:1].data = [...radarData[type]];
+    radarChartInst.update('none');
+  }
+}
+window.updateRadar = updateRadar;
+
+async function radarSave() {
+  try {
+    await setDoc(doc(db, 'catcher', 'radar'), { current: radarData.current, target: radarData.target });
+    const now = new Date();
+    const ts = (now.getMonth()+1) + '/' + now.getDate() + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('radar-saved-time').textContent = '最後儲存：' + ts;
+    showSync('☁️ 雷達圖資料已同步雲端', '#22c55e');
+  } catch(e) { showSync('⚠️ 同步失敗', '#ef4444'); }
+}
+window.radarSave = radarSave;
+
+function radarReset() {
+  if (!confirm('確定要重置為預設值嗎？')) return;
+  radarData = { current: [...RADAR_DEFAULTS.current], target: [...RADAR_DEFAULTS.target] };
+  buildRadarSliders();
+  if (radarChartInst) {
+    radarChartInst.data.datasets[0].data = [...radarData.current];
+    radarChartInst.data.datasets[1].data = [...radarData.target];
+    radarChartInst.update();
+  }
+}
+window.radarReset = radarReset;
+
+function initRadarChart() {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  if (radarChartInst) { radarChartInst.destroy(); }
+  radarChartInst = new Chart(ctx, {
     type: 'radar',
     data: {
-      labels: ['臂力', '傳球速度', '打擊精準', '爆發力', '體能耐力', '守備反應'],
+      labels: RADAR_LABELS,
       datasets: [
-        { label: '現況', data: [4,5,4,6,6,7], backgroundColor: 'rgba(232,160,32,.15)', borderColor: 'rgba(232,160,32,.8)', pointBackgroundColor: '#e8a020', pointBorderColor: '#fff', pointRadius: 4, borderWidth: 2 },
-        { label: '3個月目標', data: [7,7.5,7,8,7.5,8], backgroundColor: 'rgba(59,130,246,.1)', borderColor: 'rgba(59,130,246,.6)', pointBackgroundColor: '#3b82f6', pointBorderColor: '#fff', pointRadius: 4, borderWidth: 2, borderDash: [5,3] }
+        { label: '現況自評', data: [...radarData.current],
+          backgroundColor: 'rgba(232,160,32,.18)', borderColor: 'rgba(232,160,32,.9)',
+          pointBackgroundColor: '#e8a020', pointBorderColor: '#fff', pointRadius: 5, borderWidth: 2 },
+        { label: '目標設定', data: [...radarData.target],
+          backgroundColor: 'rgba(59,130,246,.1)', borderColor: 'rgba(59,130,246,.7)',
+          pointBackgroundColor: '#3b82f6', pointBorderColor: '#fff', pointRadius: 5, borderWidth: 2,
+          borderDash: [5,3] }
       ]
     },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 } } }, scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, color: '#8896a7', font: { size: 10 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,.06)' }, angleLines: { color: 'rgba(255,255,255,.06)' }, pointLabels: { color: '#f0f4f8', font: { size: 12 } } } } }
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+      plugins: { legend: { display: false } },
+      scales: { r: {
+        min: 0, max: 10, ticks: { stepSize: 2, color: '#8896a7', font: { size: 10 }, backdropColor: 'transparent' },
+        grid: { color: 'rgba(255,255,255,.07)' },
+        angleLines: { color: 'rgba(255,255,255,.07)' },
+        pointLabels: { color: '#f0f4f8', font: { size: 12, weight: '600' } }
+      }}
+    }
   });
+}
+
+window.addEventListener('load', async () => {
   new Chart(document.getElementById('doughnutChart').getContext('2d'), {
     type: 'doughnut',
     data: { labels: ['阻殺臂力','打擊訓練','爆發力體能','體態飲食'], datasets: [{ data: [40,30,20,10], backgroundColor: ['rgba(232,160,32,.8)','rgba(59,130,246,.8)','rgba(34,197,94,.8)','rgba(239,68,68,.8)'], borderColor: '#161b24', borderWidth: 3, hoverOffset: 8 }] },
@@ -762,8 +857,16 @@ window.addEventListener('load', async () => {
   try {
     const profileSnap = await getDoc(doc(db, 'catcher', 'profile'));
     if (profileSnap.exists()) { const p = profileSnap.data(); renderProfile(p.h, p.w, p.name, p.months); }
+    // 載入雷達圖資料
+    const radarSnap = await getDoc(doc(db, 'catcher', 'radar'));
+    if (radarSnap.exists()) {
+      const r = radarSnap.data();
+      radarData = { current: r.current, target: r.target };
+    }
   } catch(e) { showSync('⚠️ 無法連線雲端', '#ef4444'); }
 
+  buildRadarSliders();
+  initRadarChart();
   initJournal();
   await renderWeightList();
   initTimer();
