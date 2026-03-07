@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>捕手訓練計畫</title>
-<meta name="description" content="鄒祈勒捕手專項訓練追蹤 App">
+<meta name="description" content="西苑高中捕手專項訓練追蹤 App">
 <meta name="theme-color" content="#e8a020">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -240,6 +240,16 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .note-item-text{font-size:13px;line-height:1.7;white-space:pre-wrap;}
 .note-coach .note-item-text{color:#fbbf24;}
 .note-player .note-item-text{color:var(--text);}
+
+/* FOOD CARDS */
+.food-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform .2s;}
+.food-card:hover{transform:translateY(-2px);}
+.food-card img{width:100%;height:90px;object-fit:cover;display:block;}
+.food-name{font-size:12px;font-weight:700;padding:8px 10px 2px;}
+.food-desc{font-size:10px;color:var(--muted);padding:0 10px 6px;line-height:1.6;}
+.food-tag{font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 10px 6px;text-transform:uppercase;}
+.food-tag.animal{color:var(--accent);}
+.food-tag.plant{color:var(--accent3);}
 </style>
 </head>
 <body>
@@ -410,32 +420,48 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 
   <!-- 優質蛋白 -->
   <div class="chart-card" style="margin-bottom:14px">
-    <h3 style="margin-bottom:12px">🥩 優質蛋白質來源</h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div>
-        <div style="font-size:10px;letter-spacing:1px;color:var(--accent);font-weight:700;margin-bottom:8px">動物性（吸收率高）</div>
-        <div style="font-size:12px;color:var(--muted);line-height:2">
-          🍗 雞胸肉 — 100g含31g蛋白質<br>
-          🥚 雞蛋 — 每顆6g，早餐必備<br>
-          🐟 鮪魚罐頭 — 便宜方便高蛋白<br>
-          🐖 豬里肌 — 低脂優質肉類<br>
-          🥛 低脂牛奶/希臘優格 — 睡前補充
-        </div>
+    <h3 style="margin-bottom:14px">🥩 優質蛋白質來源</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:14px">
+      <div class="food-card">
+        <img src="https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=200&q=70&auto=format" alt="雞胸肉" onerror="this.style.display='none'">
+        <div class="food-name">🍗 雞胸肉</div>
+        <div class="food-desc">每100g含<strong>31g</strong>蛋白質<br>最高性價比首選</div>
+        <div class="food-tag animal">動物性</div>
       </div>
-      <div>
-        <div style="font-size:10px;letter-spacing:1px;color:var(--accent2);font-weight:700;margin-bottom:8px">植物性（輔助補充）</div>
-        <div style="font-size:12px;color:var(--muted);line-height:2">
-          🫘 板豆腐 — 100g含8g蛋白質<br>
-          🌱 毛豆/黑豆 — 高蛋白豆類<br>
-          🥛 豆漿 — 每日早餐已在喝 ✓<br>
-          🌾 藜麥 — 完整胺基酸來源<br>
-          &nbsp;
-        </div>
+      <div class="food-card">
+        <img src="https://images.unsplash.com/photo-1582169296194-e4d644c48063?w=200&q=70&auto=format" alt="雞蛋" onerror="this.style.display='none'">
+        <div class="food-name">🥚 雞蛋</div>
+        <div class="food-desc">每顆含<strong>6g</strong>蛋白質<br>早餐必備，完整胺基酸</div>
+        <div class="food-tag animal">動物性</div>
+      </div>
+      <div class="food-card">
+        <img src="https://images.unsplash.com/photo-1607532941433-304659e8198a?w=200&q=70&auto=format" alt="鮪魚" onerror="this.style.display='none'">
+        <div class="food-name">🐟 鮪魚罐頭</div>
+        <div class="food-desc">便宜方便<br>每罐約<strong>25g</strong>蛋白質</div>
+        <div class="food-tag animal">動物性</div>
+      </div>
+      <div class="food-card">
+        <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=200&q=70&auto=format" alt="希臘優格" onerror="this.style.display='none'">
+        <div class="food-name">🥛 希臘優格</div>
+        <div class="food-desc">每100g含<strong>10g</strong>蛋白質<br>睡前補充最佳</div>
+        <div class="food-tag animal">動物性</div>
+      </div>
+      <div class="food-card">
+        <img src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=200&q=70&auto=format" alt="豆腐" onerror="this.style.display='none'">
+        <div class="food-name">🫘 板豆腐</div>
+        <div class="food-desc">每100g含<strong>8g</strong>蛋白質<br>植物性優質來源</div>
+        <div class="food-tag plant">植物性</div>
+      </div>
+      <div class="food-card">
+        <img src="https://images.unsplash.com/photo-1600335895229-6e75511892c8?w=200&q=70&auto=format" alt="毛豆" onerror="this.style.display='none'">
+        <div class="food-name">🌱 毛豆</div>
+        <div class="food-desc">每100g含<strong>11g</strong>蛋白質<br>高蛋白零食首選</div>
+        <div class="food-tag plant">植物性</div>
       </div>
     </div>
-    <div style="background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.2);border-radius:10px;padding:12px;margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8">
+    <div style="background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.2);border-radius:10px;padding:12px;font-size:12px;color:var(--muted);line-height:1.8">
       💡 <strong style="color:var(--text)">每日分配範例：</strong>
-      早餐豆漿+2蛋(22g) → 午餐雞胸(30g) → 晚餐魚/豬里肌+豆腐(45g) → 睡前牛奶(8g) = 約105g，其餘由日常食物補足
+      早餐豆漿+2蛋(22g) → 午餐雞胸(30g) → 晚餐魚/豬里肌+豆腐(45g) → 睡前優格(10g) = 約107g，其餘由日常食物補足
     </div>
   </div>
 
@@ -1332,19 +1358,58 @@ function timerStart() {
       if (timerPhase === 'work') {
         if (timerCurrentSet >= timerTotalSets) {
           clearInterval(timerInterval); timerRunning = false;
+          playComplete();
           document.getElementById('timer-num').textContent = '完成';
           document.getElementById('timer-phase').textContent = '全部完成！🎉';
           document.getElementById('timer-start-btn').textContent = '▶ 開始';
           document.getElementById('timer-start-btn').className = 'timer-btn start';
           timerCurrentSet = 0; return;
         }
+        playSwitch();
         timerPhase = 'rest'; timerSec = parseInt(document.getElementById('ts-rest').value) || 60;
-      } else { timerPhase = 'work'; timerCurrentSet++; timerSec = parseInt(document.getElementById('ts-work').value) || 30; }
+      } else {
+        playSwitch();
+        timerPhase = 'work'; timerCurrentSet++; timerSec = parseInt(document.getElementById('ts-work').value) || 30;
+      }
     }
     updateTimerDisplay();
   }, 1000);
 }
 window.timerStart = timerStart;
+
+// Web Audio 提示音
+let _audioCtx = null;
+function getAudioCtx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _audioCtx;
+}
+function playBeep(freq, duration, vol) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = freq || 880;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(vol || 0.4, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (duration || 0.15));
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + (duration || 0.15));
+  } catch(e) {}
+}
+// 倒數3秒提示（短嗶）
+function playCountdown() { playBeep(660, 0.1, 0.3); }
+// 切換提示（雙嗶）
+function playSwitch() {
+  playBeep(880, 0.15, 0.5);
+  setTimeout(() => playBeep(880, 0.15, 0.5), 200);
+}
+// 完成提示（三連嗶上升）
+function playComplete() {
+  playBeep(660, 0.15, 0.5);
+  setTimeout(() => playBeep(880, 0.15, 0.5), 200);
+  setTimeout(() => playBeep(1100, 0.3, 0.6), 400);
+}
 
 function updateTimerDisplay() {
   const el = document.getElementById('timer-num'), phase = document.getElementById('timer-phase'), info = document.getElementById('timer-set-info');
@@ -1352,6 +1417,8 @@ function updateTimerDisplay() {
   if (timerPhase === 'work') { el.style.color = 'var(--accent3)'; phase.textContent = '訓練中'; phase.className = 'timer-phase work'; }
   else { el.style.color = 'var(--accent2)'; phase.textContent = '休息中'; phase.className = 'timer-phase rest'; }
   info.textContent = '第 ' + timerCurrentSet + ' / ' + timerTotalSets + ' 組';
+  // 倒數3秒提示音
+  if (timerSec <= 3 && timerSec > 0) playCountdown();
 }
 
 function timerReset() {
