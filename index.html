@@ -251,6 +251,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
   <div class="nav-tab" onclick="switchTab('weight')">⚖️ 體重追蹤</div>
   <div class="nav-tab" onclick="switchTab('timer')">⏱️ 計時器</div>
   <div class="nav-tab" onclick="switchTab('notes')">📣 備註心得</div>
+  <div class="nav-tab" onclick="switchTab('game')">⚾ 比賽紀錄</div>
+  <div class="nav-tab" onclick="switchTab('report')">📈 月報表</div>
 </div>
 
 <!-- ===== TAB: 訓練計畫 ===== -->
@@ -565,6 +567,15 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     </div>
     <div id="log-history-list"></div>
   </div>
+
+  <!-- 成就徽章 -->
+  <div class="section-title" style="margin-top:24px">
+    <div class="icon" style="background:rgba(232,160,32,.15)">🏆</div>
+    <div><div class="num">ACHIEVEMENTS</div><h2>成就徽章</h2></div>
+  </div>
+  <div id="badge-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-bottom:20px">
+    <div style="text-align:center;color:var(--muted);font-size:12px;padding:20px;grid-column:1/-1">載入中...</div>
+  </div>
 </div>
 </div>
 
@@ -668,6 +679,105 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 </div>
 </div>
 
+<!-- ===== TAB: 比賽紀錄 ===== -->
+<div id="tab-game" class="tab-page">
+<div class="container" style="padding-top:24px">
+
+  <div class="section-title" style="margin-top:0">
+    <div class="icon" style="background:rgba(239,68,68,.15)">⚾</div>
+    <div><div class="num">GAME LOG</div><h2>比賽紀錄</h2></div>
+  </div>
+
+  <!-- 新增比賽 -->
+  <div class="chart-card" style="margin-bottom:14px">
+    <h3 style="margin-bottom:14px">📝 新增比賽紀錄</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="inp-wrap"><label>比賽日期</label><input id="g-date" type="date" style="width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:14px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif"></div>
+      <div class="inp-wrap"><label>對手</label><input id="g-opp" type="text" placeholder="例：台中一中" style="width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:14px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif"></div>
+      <div class="inp-wrap"><label>比分（我方）</label><input id="g-score-us" type="number" min="0" placeholder="0" style="width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:14px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif;text-align:center"></div>
+      <div class="inp-wrap"><label>比分（對手）</label><input id="g-score-them" type="number" min="0" placeholder="0" style="width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:14px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif;text-align:center"></div>
+      <div class="inp-wrap"><label>打數</label><input id="g-ab" type="number" min="0" placeholder="0" style="width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:14px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif;text-align:center"></div>
+      <div class="inp-wrap"><label>安打數</label><input id="g-hit" type="number" min="0" placeholder="0" style="width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:14px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif;text-align:center"></div>
+      <div class="inp-wrap"><label>盜壘阻殺次數</label><input id="g-cs" type="number" min="0" placeholder="0" style="width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:14px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif;text-align:center"></div>
+      <div class="inp-wrap"><label>失誤次數</label><input id="g-err" type="number" min="0" placeholder="0" style="width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:14px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif;text-align:center"></div>
+    </div>
+    <div class="inp-wrap" style="margin-bottom:10px"><label>本場備註</label><textarea id="g-note" placeholder="例：第3局阻殺成功，打擊外角球漏接..." style="width:100%;background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:13px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif;resize:vertical;min-height:60px;line-height:1.7"></textarea></div>
+    <button onclick="saveGame()" style="width:100%;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:var(--red);font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700;padding:11px;border-radius:10px;cursor:pointer">⚾ 儲存比賽紀錄</button>
+  </div>
+
+  <!-- 身體狀況區 -->
+  <div class="chart-card" style="margin-bottom:14px">
+    <h3 style="margin-bottom:6px">🌡️ 今日身體狀況回報</h3>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">訓練前評估，早期發現疲勞或不適</p>
+    <div style="display:flex;flex-direction:column;gap:12px" id="body-status-inputs">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+          <span style="font-weight:700">💪 肩膀狀況</span>
+          <span id="bv-shoulder" style="color:var(--accent);font-weight:700">3 / 5</span>
+        </div>
+        <input type="range" min="1" max="5" value="3" style="width:100%;accent-color:#e8a020"
+          oninput="document.getElementById('bv-shoulder').textContent=this.value+' / 5'" id="bs-shoulder">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)"><span>很痛</span><span>正常</span><span>很好</span></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+          <span style="font-weight:700">🦵 腿部狀況</span>
+          <span id="bv-leg" style="color:var(--accent2);font-weight:700">3 / 5</span>
+        </div>
+        <input type="range" min="1" max="5" value="3" style="width:100%;accent-color:#3b82f6"
+          oninput="document.getElementById('bv-leg').textContent=this.value+' / 5'" id="bs-leg">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)"><span>很疲</span><span>正常</span><span>充沛</span></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+          <span style="font-weight:700">😴 睡眠品質</span>
+          <span id="bv-sleep" style="color:var(--accent3);font-weight:700">3 / 5</span>
+        </div>
+        <input type="range" min="1" max="5" value="3" style="width:100%;accent-color:#22c55e"
+          oninput="document.getElementById('bv-sleep').textContent=this.value+' / 5'" id="bs-sleep">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)"><span>很差</span><span>普通</span><span>很好</span></div>
+      </div>
+    </div>
+    <button onclick="saveBodyStatus()" style="width:100%;margin-top:12px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:var(--accent3);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:700;padding:10px;border-radius:10px;cursor:pointer">🌡️ 儲存今日狀況</button>
+  </div>
+
+  <!-- 比賽列表 -->
+  <div class="section-title" style="margin-top:8px">
+    <div class="icon" style="background:rgba(239,68,68,.15)">📋</div>
+    <div><div class="num">HISTORY</div><h2>歷史比賽紀錄</h2></div>
+  </div>
+  <div id="game-list"></div>
+
+</div>
+</div>
+
+<!-- ===== TAB: 月報表 ===== -->
+<div id="tab-report" class="tab-page">
+<div class="container" style="padding-top:24px">
+
+  <div class="section-title" style="margin-top:0">
+    <div class="icon" style="background:rgba(59,130,246,.15)">📈</div>
+    <div><div class="num">MONTHLY REPORT</div><h2>月報表</h2></div>
+  </div>
+
+  <!-- 月份選擇 -->
+  <div class="chart-card" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div class="inp-wrap" style="margin:0">
+        <label>選擇月份</label>
+        <input id="report-month" type="month" style="background:#0a0c10;border:1px solid var(--border);color:var(--text);font-size:14px;padding:9px 11px;border-radius:8px;outline:none;font-family:'Noto Sans TC',sans-serif">
+      </div>
+      <button onclick="loadReport()" style="margin-top:18px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.4);color:var(--accent2);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:700;padding:10px 20px;border-radius:20px;cursor:pointer">📊 產生報表</button>
+    </div>
+  </div>
+
+  <div id="report-content">
+    <div style="text-align:center;color:var(--muted);font-size:13px;padding:40px">選擇月份後點「產生報表」</div>
+  </div>
+
+</div>
+</div>
+
 <!-- PWA 設定提示 (嵌入在 footer 上方) -->
 <div style="max-width:1100px;margin:0 auto 20px;padding:0 16px">
   <div style="background:linear-gradient(135deg,rgba(232,160,32,.12),rgba(232,160,32,.04));border:1px solid rgba(232,160,32,.3);border-radius:16px;padding:20px 24px">
@@ -749,6 +859,8 @@ function switchTab(id) {
   event.target.classList.add('active');
   if (id === 'weight') renderWeightChart();
   if (id === 'notes') loadNotes();
+  if (id === 'game') loadGames();
+  if (id === 'report') loadReport();
 }
 window.switchTab = switchTab;
 
@@ -927,6 +1039,12 @@ window.addEventListener('load', async () => {
   initTimer();
   initAccordion();
   loadNotes();
+  checkBadges();
+  // 設定月報表預設月份
+  const now = new Date();
+  const defMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const mEl = document.getElementById('report-month');
+  if (mEl) mEl.value = defMonth;
 });
 
 // ===== JOURNAL =====
@@ -1248,6 +1366,290 @@ function timerReset() {
   document.getElementById('timer-start-btn').className = 'timer-btn start';
 }
 window.timerReset = timerReset;
+
+// ===== 比賽紀錄 =====
+async function saveGame() {
+  const date = document.getElementById('g-date').value;
+  const opp  = document.getElementById('g-opp').value.trim();
+  if (!date || !opp) { alert('請填寫日期和對手'); return; }
+  const ab   = parseInt(document.getElementById('g-ab').value) || 0;
+  const hit  = parseInt(document.getElementById('g-hit').value) || 0;
+  const cs   = parseInt(document.getElementById('g-cs').value) || 0;
+  const err  = parseInt(document.getElementById('g-err').value) || 0;
+  const us   = parseInt(document.getElementById('g-score-us').value) || 0;
+  const them = parseInt(document.getElementById('g-score-them').value) || 0;
+  const note = document.getElementById('g-note').value.trim();
+  const avg  = ab > 0 ? (hit / ab).toFixed(3).replace(/^0/, '') : '.000';
+  const id   = 'game_' + date + '_' + Date.now();
+  const result = us > them ? 'W' : us < them ? 'L' : 'D';
+  const data = { id, date, opp, us, them, result, ab, hit, avg, cs, err, note };
+  try {
+    await setDoc(doc(db, 'catcher', id), data);
+    showSync('☁️ 比賽紀錄已儲存', '#22c55e');
+  } catch(e) { showSync('⚠️ 同步失敗', '#ef4444'); }
+  // 清空表單
+  ['g-opp','g-note'].forEach(i => document.getElementById(i).value = '');
+  ['g-ab','g-hit','g-cs','g-err','g-score-us','g-score-them'].forEach(i => document.getElementById(i).value = '');
+  await loadGames();
+}
+window.saveGame = saveGame;
+
+async function deleteGame(id) {
+  if (!confirm('確定要刪除這場比賽紀錄嗎？')) return;
+  try { await deleteDoc(doc(db, 'catcher', id)); showSync('🗑️ 已刪除', '#8896a7'); } catch(e) {}
+  await loadGames();
+}
+window.deleteGame = deleteGame;
+
+async function loadGames() {
+  try {
+    const snap = await getDocs(collection(db, 'catcher'));
+    const games = [];
+    snap.forEach(d => { if (d.id.startsWith('game_')) games.push(d.data()); });
+    games.sort((a, b) => b.date.localeCompare(a.date));
+    renderGames(games);
+  } catch(e) { renderGames([]); }
+}
+
+function renderGames(games) {
+  const el = document.getElementById('game-list');
+  if (!games.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px">尚無比賽紀錄</div>';
+    return;
+  }
+  // 統計
+  const wins = games.filter(g => g.result === 'W').length;
+  const total = games.length;
+  const totalAB = games.reduce((s,g) => s + (g.ab||0), 0);
+  const totalH  = games.reduce((s,g) => s + (g.hit||0), 0);
+  const totalCS = games.reduce((s,g) => s + (g.cs||0), 0);
+  const overallAvg = totalAB > 0 ? (totalH/totalAB).toFixed(3).replace(/^0/,'') : '.000';
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+      <div class="stat-pill gold"><div class="stat-val">${wins}-${total-wins}</div><div class="stat-label">勝敗紀錄</div></div>
+      <div class="stat-pill blue"><div class="stat-val">${overallAvg}</div><div class="stat-label">打擊率</div></div>
+      <div class="stat-pill green"><div class="stat-val">${totalCS}</div><div class="stat-label">阻殺總數</div></div>
+      <div class="stat-pill red"><div class="stat-val">${Math.round(wins/total*100)||0}%</div><div class="stat-label">勝率</div></div>
+    </div>
+    ${games.map(g => {
+      const rc = g.result==='W' ? '#22c55e' : g.result==='L' ? '#ef4444' : '#8896a7';
+      return `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${rc};letter-spacing:1px">${g.result}</span>
+            <div>
+              <div style="font-size:13px;font-weight:700">vs ${g.opp}</div>
+              <div style="font-size:11px;color:var(--muted)">${g.date}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px">${g.us} <span style="color:var(--muted);font-size:14px">:</span> ${g.them}</div>
+            <button onclick="deleteGame('${g.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;opacity:.4;font-size:14px">🗑️</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;font-size:12px;flex-wrap:wrap">
+          <span>打擊率 <strong style="color:var(--accent)">${g.avg}</strong></span>
+          <span>${g.ab}打數 ${g.hit}安打</span>
+          <span>阻殺 <strong style="color:var(--accent3)">${g.cs}</strong> 次</span>
+          <span>失誤 <strong style="color:var(--red)">${g.err}</strong> 次</span>
+        </div>
+        ${g.note ? `<div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border);padding-top:8px">${g.note}</div>` : ''}
+      </div>`;
+    }).join('')}
+  `;
+}
+
+// ===== 身體狀況 =====
+async function saveBodyStatus() {
+  const today = getTodayStr();
+  const shoulder = parseInt(document.getElementById('bs-shoulder').value);
+  const leg = parseInt(document.getElementById('bs-leg').value);
+  const sleep = parseInt(document.getElementById('bs-sleep').value);
+  try {
+    await setDoc(doc(db, 'catcher', 'body_' + today), { date: today, shoulder, leg, sleep });
+    showSync('☁️ 身體狀況已記錄', '#22c55e');
+    alert('✅ 身體狀況已儲存！');
+  } catch(e) { showSync('⚠️ 同步失敗', '#ef4444'); }
+}
+window.saveBodyStatus = saveBodyStatus;
+
+// ===== 月報表 =====
+async function loadReport() {
+  const monthEl = document.getElementById('report-month');
+  const month = monthEl.value || (() => {
+    const n = new Date();
+    const m = n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0');
+    monthEl.value = m; return m;
+  })();
+
+  const el = document.getElementById('report-content');
+  el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px">🔄 載入中...</div>';
+
+  try {
+    const snap = await getDocs(collection(db, 'catcher'));
+    const logs = {}, weights = [], games = [], body = [];
+    snap.forEach(d => {
+      const id = d.id, data = d.data();
+      if (id.startsWith('log_') && id.includes(month)) logs[data.date] = data;
+      if (id.startsWith('weight_') && id.includes(month)) weights.push(data);
+      if (id.startsWith('game_') && data.date && data.date.startsWith(month)) games.push(data);
+      if (id.startsWith('body_') && id.includes(month)) body.push(data);
+    });
+
+    // 訓練統計
+    const logDays = Object.keys(logs).length;
+    const avgPct = logDays ? Math.round(Object.values(logs).reduce((s,l)=>s+l.pct,0)/logDays) : 0;
+
+    // 體重
+    weights.sort((a,b) => a.date.localeCompare(b.date));
+    const wStart = weights[0]?.kg, wEnd = weights[weights.length-1]?.kg;
+    const wDiff = (wStart && wEnd) ? (wEnd - wStart).toFixed(1) : null;
+
+    // 比賽
+    games.sort((a,b)=>a.date.localeCompare(b.date));
+    const gWins = games.filter(g=>g.result==='W').length;
+    const totalAB = games.reduce((s,g)=>s+(g.ab||0),0);
+    const totalH  = games.reduce((s,g)=>s+(g.hit||0),0);
+    const totalCS = games.reduce((s,g)=>s+(g.cs||0),0);
+    const avgStr  = totalAB ? (totalH/totalAB).toFixed(3).replace(/^0/,'') : '-';
+
+    // 身體狀況平均
+    const avgShoulder = body.length ? (body.reduce((s,b)=>s+b.shoulder,0)/body.length).toFixed(1) : '-';
+    const avgSleep    = body.length ? (body.reduce((s,b)=>s+b.sleep,0)/body.length).toFixed(1) : '-';
+
+    const [yr, mo] = month.split('-');
+    el.innerHTML = `
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);letter-spacing:3px">${yr} 年 ${mo} 月 訓練報告</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px">
+        <div class="stat-pill gold"><div class="stat-val">${logDays}</div><div class="stat-label">訓練天數</div></div>
+        <div class="stat-pill blue"><div class="stat-val">${avgPct}%</div><div class="stat-label">平均完成率</div></div>
+        <div class="stat-pill green"><div class="stat-val">${gWins}-${games.length-gWins}</div><div class="stat-label">比賽勝敗</div></div>
+        <div class="stat-pill red"><div class="stat-val">${avgStr}</div><div class="stat-label">本月打擊率</div></div>
+      </div>
+
+      <div class="chart-card" style="margin-bottom:14px">
+        <h3 style="margin-bottom:12px">📊 本月詳細數據</h3>
+        <div style="font-size:13px;line-height:2.2;color:var(--muted)">
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px">
+            <span>訓練紀錄天數</span><strong style="color:var(--text)">${logDays} 天</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px">
+            <span>平均訓練完成率</span><strong style="color:${avgPct>=80?'var(--accent3)':avgPct>=50?'var(--accent)':'var(--red)'}">${avgPct}%</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px">
+            <span>比賽場數</span><strong style="color:var(--text)">${games.length} 場</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px">
+            <span>本月阻殺次數</span><strong style="color:var(--accent3)">${totalCS} 次</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px">
+            <span>體重變化</span><strong style="color:${wDiff===null?'var(--muted)':parseFloat(wDiff)<=0?'var(--accent3)':'var(--red)'}">
+              ${wDiff===null ? '無紀錄' : (parseFloat(wDiff)>0?'▲':'▼') + Math.abs(wDiff) + ' kg'}
+            </strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px">
+            <span>平均肩膀狀況</span><strong style="color:var(--accent)">${avgShoulder} / 5</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>平均睡眠品質</span><strong style="color:var(--accent2)">${avgSleep} / 5</strong>
+          </div>
+        </div>
+      </div>
+
+      ${games.length ? `
+      <div class="chart-card">
+        <h3 style="margin-bottom:12px">⚾ 本月比賽列表</h3>
+        ${games.map(g => `
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+            <span style="color:var(--muted)">${g.date}</span>
+            <span>vs ${g.opp}</span>
+            <span style="color:${g.result==='W'?'var(--accent3)':g.result==='L'?'var(--red)':'var(--muted)'};font-weight:700">${g.result} ${g.us}:${g.them}</span>
+            <span>打擊率 <strong>${g.avg}</strong></span>
+            <span>阻殺 <strong style="color:var(--accent3)">${g.cs}</strong></span>
+          </div>
+        `).join('')}
+      </div>` : ''}
+    `;
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;color:var(--red);padding:24px">⚠️ 載入失敗，請檢查網路</div>';
+  }
+}
+window.loadReport = loadReport;
+
+// ===== 成就徽章系統 =====
+const BADGES = [
+  { id:'first_log',   icon:'🌱', name:'第一步',     desc:'完成第一筆訓練紀錄',  check: (logs) => Object.keys(logs).length >= 1 },
+  { id:'streak3',     icon:'🔥', name:'三日不滅',   desc:'連續訓練3天',          check: (logs) => calcStreak(logs) >= 3 },
+  { id:'streak7',     icon:'⭐', name:'一週戰士',   desc:'連續訓練7天',          check: (logs) => calcStreak(logs) >= 7 },
+  { id:'streak14',    icon:'🚀', name:'鋼鐵意志',   desc:'連續訓練14天',         check: (logs) => calcStreak(logs) >= 14 },
+  { id:'streak30',    icon:'👑', name:'月度王者',   desc:'連續訓練30天',         check: (logs) => calcStreak(logs) >= 30 },
+  { id:'perfect_day', icon:'💯', name:'完美一天',   desc:'單日完成率100%',       check: (logs) => Object.values(logs).some(l => l.pct === 100) },
+  { id:'ten_games',   icon:'⚾', name:'老江湖',     desc:'累計10場比賽紀錄',     check: (_, games) => games.length >= 10 },
+  { id:'cs5',         icon:'🎯', name:'狙擊手',     desc:'單場阻殺2次以上',      check: (_, games) => games.some(g => g.cs >= 2) },
+  { id:'avg300',      icon:'🏏', name:'打擊機器',   desc:'打擊率達到.300',       check: (_, games) => { const ab=games.reduce((s,g)=>s+(g.ab||0),0), h=games.reduce((s,g)=>s+(g.hit||0),0); return ab>=10 && h/ab>=0.3; }},
+  { id:'weight10',    icon:'💪', name:'體態管理師', desc:'記錄10次體重',         check: (_, __, weights) => weights.length >= 10 },
+];
+
+function calcStreak(logs) {
+  let streak = 0, d = new Date();
+  for (let i = 0; i < 365; i++) {
+    const s = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if (logs[s]) { streak++; d.setDate(d.getDate()-1); } else break;
+  }
+  return streak;
+}
+
+async function checkBadges() {
+  try {
+    const snap = await getDocs(collection(db, 'catcher'));
+    const logs = {}, games = [], weights = [], earned = new Set();
+    snap.forEach(d => {
+      const id = d.id, data = d.data();
+      if (id.startsWith('log_')) logs[data.date] = data;
+      if (id.startsWith('game_')) games.push(data);
+      if (id.startsWith('weight_')) weights.push(data);
+      if (id.startsWith('badge_')) earned.add(data.badgeId);
+    });
+    // 檢查並頒發新徽章
+    for (const badge of BADGES) {
+      if (!earned.has(badge.id) && badge.check(logs, games, weights)) {
+        await setDoc(doc(db, 'catcher', 'badge_' + badge.id), {
+          badgeId: badge.id, earnedAt: getTodayStr()
+        });
+        // 顯示恭喜通知
+        setTimeout(() => {
+          showBadgePopup(badge);
+        }, 500);
+      }
+    }
+    renderBadges(BADGES.map(b => ({ ...b, earned: earned.has(b.id) || b.check(logs, games, weights) })));
+  } catch(e) {}
+}
+
+function showBadgePopup(badge) {
+  const popup = document.createElement('div');
+  popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:28px 36px;text-align:center;z-index:9999;animation:fadeIn .3s ease;box-shadow:0 0 40px rgba(232,160,32,.3)';
+  popup.innerHTML = `<div style="font-size:52px;margin-bottom:8px">${badge.icon}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:2px;margin-bottom:4px">🏆 成就解鎖！</div><div style="font-size:16px;font-weight:700;margin-bottom:4px">${badge.name}</div><div style="font-size:12px;color:var(--muted);margin-bottom:16px">${badge.desc}</div><button onclick="this.parentElement.remove()" style="background:var(--accent);border:none;color:#000;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700;padding:9px 24px;border-radius:20px;cursor:pointer">太棒了！</button>`;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 5000);
+}
+
+function renderBadges(badges) {
+  const el = document.getElementById('badge-grid');
+  if (!el) return;
+  el.innerHTML = badges.map(b => `
+    <div style="background:${b.earned?'rgba(232,160,32,.08)':'var(--surface)'};border:1px solid ${b.earned?'rgba(232,160,32,.3)':'var(--border)'};border-radius:12px;padding:14px;text-align:center;transition:all .2s;${b.earned?'':'filter:grayscale(1);opacity:.4'}">
+      <div style="font-size:28px;margin-bottom:6px">${b.icon}</div>
+      <div style="font-size:12px;font-weight:700;margin-bottom:3px;color:${b.earned?'var(--text)':'var(--muted)'}">${b.name}</div>
+      <div style="font-size:10px;color:var(--muted);line-height:1.4">${b.desc}</div>
+      ${b.earned?'<div style="font-size:10px;color:var(--accent);margin-top:4px">✓ 已解鎖</div>':''}
+    </div>
+  `).join('');
+}
+
 
 // ===== NOTES =====
 async function saveNote(type) {
