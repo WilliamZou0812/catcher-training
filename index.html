@@ -245,6 +245,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .food-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform .2s;}
 .food-card:hover{transform:translateY(-2px);}
 .food-card img{width:100%;height:90px;object-fit:cover;display:block;}
+.food-emoji-bg{width:100%;height:90px;display:flex;align-items:center;justify-content:center;font-size:44px;line-height:1;}
 .food-name{font-size:12px;font-weight:700;padding:8px 10px 2px;}
 .food-desc{font-size:10px;color:var(--muted);padding:0 10px 6px;line-height:1.6;}
 .food-tag{font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 10px 6px;text-transform:uppercase;}
@@ -423,37 +424,37 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <h3 style="margin-bottom:14px">🥩 優質蛋白質來源</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:14px">
       <div class="food-card">
-        <img src="https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=200&q=70&auto=format" alt="雞胸肉" onerror="this.style.display='none'">
+        <div class="food-emoji-bg" style="background:linear-gradient(135deg,#2d1f0e,#4a3520)">🍗</div>
         <div class="food-name">🍗 雞胸肉</div>
         <div class="food-desc">每100g含<strong>31g</strong>蛋白質<br>最高性價比首選</div>
         <div class="food-tag animal">動物性</div>
       </div>
       <div class="food-card">
-        <img src="https://images.unsplash.com/photo-1582169296194-e4d644c48063?w=200&q=70&auto=format" alt="雞蛋" onerror="this.style.display='none'">
+        <img src="https://images.unsplash.com/photo-onxjrr3Erwc?w=400&h=200&fit=crop&auto=format" alt="雞蛋" onerror="this.style.display='none'">
         <div class="food-name">🥚 雞蛋</div>
         <div class="food-desc">每顆含<strong>6g</strong>蛋白質<br>早餐必備，完整胺基酸</div>
         <div class="food-tag animal">動物性</div>
       </div>
       <div class="food-card">
-        <img src="https://images.unsplash.com/photo-1607532941433-304659e8198a?w=200&q=70&auto=format" alt="鮪魚" onerror="this.style.display='none'">
+        <div class="food-emoji-bg" style="background:linear-gradient(135deg,#0e1f2a,#1a3040)">🐟</div>
         <div class="food-name">🐟 鮪魚罐頭</div>
         <div class="food-desc">便宜方便<br>每罐約<strong>25g</strong>蛋白質</div>
         <div class="food-tag animal">動物性</div>
       </div>
       <div class="food-card">
-        <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=200&q=70&auto=format" alt="希臘優格" onerror="this.style.display='none'">
+        <div class="food-emoji-bg" style="background:linear-gradient(135deg,#1a1a2e,#2a2a40)">🥛</div>
         <div class="food-name">🥛 希臘優格</div>
         <div class="food-desc">每100g含<strong>10g</strong>蛋白質<br>睡前補充最佳</div>
         <div class="food-tag animal">動物性</div>
       </div>
       <div class="food-card">
-        <img src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=200&q=70&auto=format" alt="豆腐" onerror="this.style.display='none'">
+        <img src="https://images.unsplash.com/photo-w7WmRrY-qlQ?w=400&h=200&fit=crop&auto=format" alt="板豆腐" onerror="this.style.display='none'">
         <div class="food-name">🫘 板豆腐</div>
         <div class="food-desc">每100g含<strong>8g</strong>蛋白質<br>植物性優質來源</div>
         <div class="food-tag plant">植物性</div>
       </div>
       <div class="food-card">
-        <img src="https://images.unsplash.com/photo-1600335895229-6e75511892c8?w=200&q=70&auto=format" alt="毛豆" onerror="this.style.display='none'">
+        <div class="food-emoji-bg" style="background:linear-gradient(135deg,#0d2010,#152a18)">🌱</div>
         <div class="food-name">🌱 毛豆</div>
         <div class="food-desc">每100g含<strong>11g</strong>蛋白質<br>高蛋白零食首選</div>
         <div class="food-tag plant">植物性</div>
