@@ -870,6 +870,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ===== 成就徽章（定義在最前面，供後續函數使用）=====
+function calcStreak(logs) {
+  let streak = 0, d = new Date();
+  for (let i = 0; i < 365; i++) {
+    const s = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if (logs[s]) { streak++; d.setDate(d.getDate()-1); } else break;
+  }
+  return streak;
+}
+const BADGES = [
+  { id:'first_log',   icon:'🌱', name:'第一步',     desc:'完成第一筆訓練紀錄',  check: (logs) => Object.keys(logs).length >= 1 },
+  { id:'streak3',     icon:'🔥', name:'三日不滅',   desc:'連續訓練3天',          check: (logs) => calcStreak(logs) >= 3 },
+  { id:'streak7',     icon:'⭐', name:'一週戰士',   desc:'連續訓練7天',          check: (logs) => calcStreak(logs) >= 7 },
+  { id:'streak14',    icon:'🚀', name:'鋼鐵意志',   desc:'連續訓練14天',         check: (logs) => calcStreak(logs) >= 14 },
+  { id:'streak30',    icon:'👑', name:'月度王者',   desc:'連續訓練30天',         check: (logs) => calcStreak(logs) >= 30 },
+  { id:'perfect_day', icon:'💯', name:'完美一天',   desc:'單日完成率100%',       check: (logs) => Object.values(logs).some(l => l.pct === 100) },
+  { id:'ten_games',   icon:'⚾', name:'老江湖',     desc:'累計10場比賽紀錄',     check: (_, games) => games.length >= 10 },
+  { id:'cs5',         icon:'🎯', name:'狙擊手',     desc:'單場阻殺2次以上',      check: (_, games) => games.some(g => g.cs >= 2) },
+  { id:'avg300',      icon:'🏏', name:'打擊機器',   desc:'打擊率達到.300',       check: (_, games) => { const ab=games.reduce((s,g)=>s+(g.ab||0),0), h=games.reduce((s,g)=>s+(g.hit||0),0); return ab>=10 && h/ab>=0.3; }},
+  { id:'weight10',    icon:'💪', name:'體態管理師', desc:'記錄10次體重',         check: (_, __, weights) => weights.length >= 10 },
+];
+
 // 顯示同步狀態
 function showSync(msg, color) {
   let el = document.getElementById('sync-status');
@@ -1647,29 +1669,6 @@ async function loadReport() {
 }
 window.loadReport = loadReport;
 
-// ===== 成就徽章系統 =====
-const BADGES = [
-  { id:'first_log',   icon:'🌱', name:'第一步',     desc:'完成第一筆訓練紀錄',  check: (logs) => Object.keys(logs).length >= 1 },
-  { id:'streak3',     icon:'🔥', name:'三日不滅',   desc:'連續訓練3天',          check: (logs) => calcStreak(logs) >= 3 },
-  { id:'streak7',     icon:'⭐', name:'一週戰士',   desc:'連續訓練7天',          check: (logs) => calcStreak(logs) >= 7 },
-  { id:'streak14',    icon:'🚀', name:'鋼鐵意志',   desc:'連續訓練14天',         check: (logs) => calcStreak(logs) >= 14 },
-  { id:'streak30',    icon:'👑', name:'月度王者',   desc:'連續訓練30天',         check: (logs) => calcStreak(logs) >= 30 },
-  { id:'perfect_day', icon:'💯', name:'完美一天',   desc:'單日完成率100%',       check: (logs) => Object.values(logs).some(l => l.pct === 100) },
-  { id:'ten_games',   icon:'⚾', name:'老江湖',     desc:'累計10場比賽紀錄',     check: (_, games) => games.length >= 10 },
-  { id:'cs5',         icon:'🎯', name:'狙擊手',     desc:'單場阻殺2次以上',      check: (_, games) => games.some(g => g.cs >= 2) },
-  { id:'avg300',      icon:'🏏', name:'打擊機器',   desc:'打擊率達到.300',       check: (_, games) => { const ab=games.reduce((s,g)=>s+(g.ab||0),0), h=games.reduce((s,g)=>s+(g.hit||0),0); return ab>=10 && h/ab>=0.3; }},
-  { id:'weight10',    icon:'💪', name:'體態管理師', desc:'記錄10次體重',         check: (_, __, weights) => weights.length >= 10 },
-];
-
-function calcStreak(logs) {
-  let streak = 0, d = new Date();
-  for (let i = 0; i < 365; i++) {
-    const s = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-    if (logs[s]) { streak++; d.setDate(d.getDate()-1); } else break;
-  }
-  return streak;
-}
-
 async function checkBadges() {
   try {
     const snap = await getDocs(collection(db, 'catcher'));
@@ -1694,7 +1693,7 @@ async function checkBadges() {
       }
     }
     renderBadges(BADGES.map(b => ({ ...b, earned: earned.has(b.id) || b.check(logs, games, weights) })));
-  } catch(e) {}
+  } catch(e) { console.error('checkBadges error:', e); }
 }
 
 function showBadgePopup(badge) {
