@@ -1270,7 +1270,7 @@ function renderLogHistory(logs) {
 let weightChartInst = null;
 
 async function addWeight() {
-  const val = parseFloat(document.getElementById('weight-input').value);
+  const val = parseFloat(parseFloat(document.getElementById('weight-input').value).toFixed(1));
   if (!val || val < 30 || val > 200) { alert('請輸入合理的體重（30~200 kg）'); return; }
   const today = getTodayStr();
   try {
@@ -1301,7 +1301,7 @@ async function renderWeightList() {
   el.innerHTML = weights.map((w, i) => {
     const diff = i < weights.length - 1 ? (w.kg - weights[i+1].kg).toFixed(1) : null;
     const diffStr = diff !== null ? (diff > 0 ? '<span style="color:var(--red)">▲' + diff + '</span>' : diff < 0 ? '<span style="color:var(--accent3)">▼' + Math.abs(diff) + '</span>' : '<span style="color:var(--muted)">—</span>') : '';
-    return '<div class="weight-row"><span style="color:var(--muted)">' + w.date + '</span><span style="font-weight:700">' + w.kg + ' kg</span><span>' + diffStr + '</span><button class="weight-del" onclick="deleteWeight(\'' + w.date + '\')">✕</button></div>';
+    return '<div class="weight-row"><span style="color:var(--muted)">' + w.date + '</span><span style="font-weight:700">' + parseFloat(w.kg).toFixed(1) + ' kg</span><span>' + diffStr + '</span><button class="weight-del" onclick="deleteWeight(\'' + w.date + '\')">✕</button></div>';
   }).join('');
   renderWeightChart();
 }
@@ -1334,7 +1334,7 @@ function renderWeightChart() {
       labels: weights.map(w => w.date.slice(5)),
       datasets: [{ label: '體重 (kg)', data: weights.map(w => w.kg), borderColor: 'rgba(59,130,246,.9)', backgroundColor: 'rgba(59,130,246,.08)', tension: 0.3, fill: true, pointBackgroundColor: '#3b82f6', pointRadius: 5, pointHoverRadius: 7 }]
     },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 } } }, scales: { x: { ticks: { color: '#8896a7', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,.04)' } }, y: { ticks: { color: '#8896a7', font: { size: 11 }, callback: v => v + 'kg' }, grid: { color: 'rgba(255,255,255,.04)' } } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8896a7', font: { size: 11 }, boxWidth: 12 } } }, scales: { x: { ticks: { color: '#8896a7', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,.04)' } }, y: { ticks: { color: '#8896a7', font: { size: 11 }, callback: v => parseFloat(v).toFixed(1) + 'kg' }, grid: { color: 'rgba(255,255,255,.04)' } } } }
   });
 }
 
